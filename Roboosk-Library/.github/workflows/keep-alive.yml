@@ -1,0 +1,26 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    # Runs on the 1st of every month at 10:00 UTC
+    - cron: '0 10 1 * *'
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase
+        run: |
+          echo "Pinging Supabase to keep project alive..."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://emqbosamvstewjrysveh.supabase.co/rest/v1/books?select=id&limit=1" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtcWJvc2FtdnN0ZXdqcnlzdmVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzM3NTYsImV4cCI6MjA4NzI0OTc1Nn0.274Kvn0v-OKSuD5oSFTrKlUjzHDopNEuki_SqATG4YU" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtcWJvc2FtdnN0ZXdqcnlzdmVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzM3NTYsImV4cCI6MjA4NzI0OTc1Nn0.274Kvn0v-OKSuD5oSFTrKlUjzHDopNEuki_SqATG4YU")
+          echo "Response status: $STATUS"
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "206" ]; then
+            echo "✅ Supabase is alive!"
+          else
+            echo "⚠️ Unexpected status: $STATUS"
+            exit 1
+          fi

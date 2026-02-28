@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<link rel="icon" type="image/png" href="assets/R.png"/>
+<link rel="apple-touch-icon" href="assets/R.png"/>
+<link rel="manifest" href="manifest.json"/>
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Roboosk Library v1.12</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Crimson Pro',Georgia,serif;background:#0c0f0a;color:#e8ede4;min-height:100vh;overflow-x:hidden;transition:background .25s,color .25s}
+button,input,textarea,select{font-family:inherit}
+:root{
+  --bg:#0c0f0a;--bg2:#131810;--bg3:#1a2016;--bg4:#202820;
+  --border:#2a3528;--accent:#6dbe8a;--accentDim:rgba(109,190,138,.12);
+  --accentFg:#071208;--text:#e8ede4;--text2:#8aaa90;--text3:#4a6050;
+  --gold:#c8a84b;--danger:#c85858;--shadow:0 12px 48px rgba(0,0,0,.6);
+  --r:14px;--r2:9px;--tr:.16s ease;
+}
+.th-midnight{--bg:#0a0a0f;--bg2:#13131a;--bg3:#1c1c26;--bg4:#222233;--border:#2a2a3a;--accent:#7c6af7;--accentDim:rgba(124,106,247,.14);--accentFg:#fff;--text:#e8e8f8;--text2:#8888aa;--text3:#4a4a6a;--gold:#c8a84b;--danger:#c85858}
+.th-ocean{--bg:#060e1a;--bg2:#0c1828;--bg3:#132035;--bg4:#172540;--border:#1a2d45;--accent:#38bdf8;--accentDim:rgba(56,189,248,.13);--accentFg:#010f1e;--text:#e0f2fe;--text2:#5a8aaa;--text3:#2a4a66;--gold:#c8a84b;--danger:#c85858}
+.th-rose{--bg:#1a0d12;--bg2:#24131a;--bg3:#2e1a22;--bg4:#381f29;--border:#3d2030;--accent:#f472b6;--accentDim:rgba(244,114,182,.13);--accentFg:#1a0010;--text:#fce7f3;--text2:#bb6688;--text3:#663344;--gold:#c8a84b;--danger:#c85858}
+.th-parch{--bg:#f5f0e8;--bg2:#ede8dc;--bg3:#e5dece;--bg4:#ddd6c4;--border:#cec8b8;--accent:#8b5e3c;--accentDim:rgba(139,94,60,.1);--accentFg:#fff8f0;--text:#2a1f10;--text2:#7a6a52;--text3:#b0a090;--gold:#8b5e3c;--danger:#c85858;--shadow:0 8px 32px rgba(0,0,0,.1)}
+.th-slate{--bg:#f0f2f5;--bg2:#e8eaed;--bg3:#dde0e5;--bg4:#d2d5dc;--border:#c8ccd4;--accent:#5865f2;--accentDim:rgba(88,101,242,.1);--accentFg:#fff;--text:#1a1c2e;--text2:#5a5e7a;--text3:#9a9eb0;--gold:#b8860b;--danger:#c85858;--shadow:0 8px 32px rgba(0,0,0,.08)}
+
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* ── TOPBAR ── */
+.topbar{position:sticky;top:0;z-index:200;background:rgba(12,15,10,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.4rem;padding:.6rem 1.4rem;flex-wrap:wrap}
+.logo{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--accent);cursor:pointer;letter-spacing:-.02em;display:flex;align-items:baseline;gap:.3rem;flex-shrink:0}
+.logo-beta{font-size:.58rem;font-weight:400;color:var(--gold);letter-spacing:.06em;border:1px solid var(--gold);border-radius:4px;padding:.05rem .3rem;margin-left:.1rem}
+.tb-gap{flex:1}
+.nav-btn{background:transparent;border:none;color:var(--text2);cursor:pointer;padding:.32rem .65rem;border-radius:20px;font-size:.8rem;font-weight:600;transition:var(--tr);display:inline-flex;align-items:center;gap:.28rem;white-space:nowrap}
+.nav-btn:hover{background:var(--bg3);color:var(--text)}
+.nav-btn.active{color:var(--accent);background:var(--accentDim)}
+.tb-prim{background:var(--accent);color:var(--accentFg);border:none;padding:.34rem .85rem;border-radius:20px;font-size:.8rem;font-weight:700;cursor:pointer;transition:var(--tr)}
+.tb-prim:hover{filter:brightness(1.1)}
+
+.vsep{width:1px;height:16px;background:var(--border);flex-shrink:0}
+.avatar-btn{width:30px;height:30px;border-radius:50%;background:var(--accentDim);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--accent);cursor:pointer;flex-shrink:0;transition:var(--tr)}
+.avatar-btn:hover{transform:scale(1.08)}
+.avatar-btn img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+
+/* ── PAGES ── */
+.page{display:none;min-height:calc(100vh - 56px);position:relative;z-index:1}
+.page.show{display:block}
+
+/* ── HOME ── */
+.hero{padding:4rem 1.6rem 2.5rem;text-align:center;background:radial-gradient(ellipse 80% 55% at 50% 0%,rgba(109,190,138,.07) 0%,transparent 70%)}
+.hero-ey{font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:.9rem;opacity:.8}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.8rem);font-weight:900;line-height:1.05;margin-bottom:.9rem;background:linear-gradient(150deg,#e8ede4 0%,#6dbe8a 55%,#c8a84b 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1rem;color:var(--text2);max-width:480px;margin:0 auto 1.8rem;line-height:1.7;font-style:italic}
+.hero-btns{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
+.hero-stats{display:flex;gap:2.5rem;justify-content:center;margin-top:2.5rem;padding-top:1.8rem;border-top:1px solid var(--border)}
+.stat-n{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:var(--accent)}
+.stat-l{font-size:.65rem;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-top:.1rem}
+.genres-bar{display:flex;gap:.35rem;padding:.75rem 1.6rem;overflow-x:auto;border-bottom:1px solid var(--border);background:var(--bg2)}
+.genres-bar::-webkit-scrollbar{height:3px}
+.genre-pill{flex-shrink:0;padding:.24rem .68rem;border-radius:13px;background:transparent;border:1px solid var(--border);color:var(--text2);font-size:.74rem;cursor:pointer;transition:var(--tr)}
+.genre-pill:hover{border-color:var(--accent);color:var(--accent)}
+.genre-pill.on{background:var(--accent);border-color:var(--accent);color:var(--accentFg);font-weight:700}
+.sec{padding:1.6rem}
+.sec-hd{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:1.1rem;display:flex;align-items:center;gap:.65rem}
+.sec-hd::after{content:'';flex:1;height:1px;background:var(--border)}
+.books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.9rem}
+.bk{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:var(--tr)}
+.bk:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:var(--shadow)}
+.bk-cov{width:100%;aspect-ratio:2/3;overflow:hidden;background:var(--bg3);position:relative}
+.bk-cov img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.bk:hover .bk-cov img{transform:scale(1.04)}
+.bk-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.7rem;text-align:center;background:linear-gradient(135deg,var(--accentDim),var(--bg3))}
+.bk-ph-i{font-size:1.8rem;margin-bottom:.25rem;opacity:.6}
+.bk-ph-t{font-family:'Playfair Display',serif;font-size:.68rem;color:var(--accent);font-weight:700;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+.bk-inf{padding:.55rem .65rem}
+.bk-title{font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.bk-author{color:var(--text2);font-size:.7rem;font-style:italic;margin-top:.12rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.bk-foot{display:flex;align-items:center;justify-content:space-between;margin-top:.3rem}
+.bk-stars{color:var(--gold);font-size:.68rem}
+.bk-dl{font-size:.63rem;color:var(--text3)}
+.empty{text-align:center;padding:3.5rem;color:var(--text3);font-style:italic;font-size:1rem}
+
+/* ── DETAIL ── */
+.det-wrap{padding:2rem 1.6rem;max-width:860px;margin:0 auto}
+.back-btn{display:inline-flex;align-items:center;gap:.35rem;color:var(--text2);font-size:.82rem;cursor:pointer;margin-bottom:1.4rem;transition:var(--tr);border:none;background:transparent}
+.back-btn:hover{color:var(--accent)}
+.det-hero{display:flex;gap:2rem;margin-bottom:2rem;flex-wrap:wrap}
+.det-cov{width:180px;min-width:180px;aspect-ratio:2/3;border-radius:var(--r);overflow:hidden;box-shadow:0 16px 50px rgba(0,0,0,.55);border:1px solid var(--border);flex-shrink:0}
+.det-cov img,.det-cov-ph{width:100%;height:100%;object-fit:cover}
+.det-cov-ph{display:flex;align-items:center;justify-content:center;font-size:2.8rem;background:linear-gradient(135deg,var(--accentDim),var(--bg3));opacity:.6}
+.det-meta{flex:1;min-width:0;display:flex;flex-direction:column;gap:.55rem}
+.det-genre{display:inline-block;padding:.15rem .5rem;background:var(--accentDim);color:var(--accent);border-radius:9px;font-size:.65rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.det-title{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,4vw,2.2rem);font-weight:900;line-height:1.1}
+.det-author{font-size:1rem;font-style:italic;color:var(--text2)}
+.det-stats{display:flex;gap:1.4rem;padding:.65rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.det-stat-n{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--accent)}
+.det-stat-l{font-size:.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em}
+.det-desc{font-size:.92rem;line-height:1.8;color:var(--text2);font-style:italic}
+.dl-btn{display:inline-flex;align-items:center;gap:.45rem;padding:.58rem 1.4rem;background:var(--accent);color:var(--accentFg);border:none;border-radius:20px;font-size:.88rem;font-weight:700;cursor:pointer;transition:var(--tr);margin-top:auto}
+.dl-btn:hover{filter:brightness(1.1);transform:translateY(-2px);box-shadow:0 6px 20px rgba(109,190,138,.3)}
+.rv-sec{margin-top:1.8rem}
+.rv-sec h2{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:.9rem}
+.stars-row{display:flex;gap:.2rem;margin-bottom:.55rem}
+.star{font-size:1.3rem;cursor:pointer;transition:var(--tr);opacity:.28;user-select:none}
+.star.on{opacity:1}
+.star:hover{transform:scale(1.18)}
+.rv-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:.85rem 1rem;margin-bottom:.55rem}
+.rv-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem}
+.rv-user{font-weight:600;font-size:.83rem;color:var(--accent)}
+.rv-stars{color:var(--gold);font-size:.72rem}
+.rv-text{font-size:.86rem;color:var(--text2);line-height:1.6;font-style:italic}
+.rv-date{font-size:.66rem;color:var(--text3);margin-top:.3rem}
+.write-rv{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;margin-bottom:1.1rem}
+.write-rv h3{font-size:.88rem;margin-bottom:.65rem;color:var(--text2)}
+
+/* ── UPLOAD PAGE ── */
+.upload-wrap{max-width:620px;margin:0 auto;padding:2rem 1.6rem}
+.upload-wrap h1{font-family:'Playfair Display',serif;font-size:1.8rem;margin-bottom:.3rem}
+.upload-wrap>p{color:var(--text2);font-style:italic;margin-bottom:1.4rem;font-size:.88rem}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem;margin-bottom:.9rem}
+.card h2{font-size:.95rem;font-weight:700;margin-bottom:.9rem;color:var(--accent)}
+.dz{border:2px dashed var(--border);border-radius:var(--r2);padding:1.6rem;text-align:center;cursor:pointer;transition:var(--tr);color:var(--text2)}
+.dz:hover,.dz.ov{border-color:var(--accent);background:var(--accentDim);color:var(--accent)}
+.dz.has{border-color:var(--accent);background:var(--accentDim)}
+.dz-icon{font-size:2rem;margin-bottom:.4rem}
+
+/* ── PROFILE PAGE ── */
+.prof-wrap{max-width:620px;margin:0 auto;padding:2rem 1.6rem}
+.prof-hero{display:flex;align-items:center;gap:1.2rem;margin-bottom:1.4rem;flex-wrap:wrap}
+.prof-av{width:80px;height:80px;border-radius:50%;background:var(--accentDim);border:3px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;color:var(--accent);overflow:hidden;cursor:pointer;position:relative;flex-shrink:0}
+.prof-av img{width:100%;height:100%;object-fit:cover}
+.prof-av-ov{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:var(--tr);font-size:.7rem}
+.prof-av:hover .prof-av-ov{opacity:1}
+.prof-name-big{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900}
+.prof-bio-preview{font-size:.85rem;color:var(--text2);font-style:italic;margin-top:.2rem}
+
+/* ── SETTINGS PAGE ── */
+.sett-wrap{max-width:600px;margin:0 auto;padding:2rem 1.6rem}
+.sett-wrap h1{font-family:'Playfair Display',serif;font-size:1.8rem;margin-bottom:.3rem}
+.sett-wrap>p{color:var(--text2);font-style:italic;margin-bottom:1.4rem;font-size:.88rem}
+.th-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-top:.5rem}
+.th-btn{display:flex;flex-direction:column;align-items:center;gap:.2rem;padding:.42rem .3rem;border-radius:var(--r2);border:2px solid var(--border);background:var(--bg3);cursor:pointer;transition:var(--tr);font-size:.67rem;color:var(--text2);font-weight:600}
+.th-btn:hover{border-color:var(--accent);color:var(--accent)}
+.th-btn.sel{border-color:var(--accent);background:var(--accentDim);color:var(--accent)}
+.th-dot{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.1)}
+.irow{display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.83rem}
+.irow:last-child{border-bottom:none}
+.irow span{color:var(--text2)}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-item:last-child{border-bottom:none}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:.75rem 0;font-size:.88rem;font-weight:600;cursor:pointer;color:var(--text);transition:color .15s}
+.faq-q:hover{color:var(--accent)}
+.faq-arr{color:var(--text3);font-size:.75rem;transition:transform .2s;flex-shrink:0;margin-left:.5rem}
+.faq-item.open .faq-arr{transform:rotate(180deg)}
+.faq-a{font-size:.84rem;color:var(--text2);line-height:1.65;padding-bottom:.85rem;display:none}
+.faq-item.open .faq-a{display:block}
+
+/* ── AUTH ── */
+.auth-wrap{max-width:400px;margin:3.5rem auto;padding:2rem 1.6rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow)}
+.auth-wrap h1{font-family:'Playfair Display',serif;font-size:1.7rem;margin-bottom:.3rem}
+.auth-wrap>p{color:var(--text2);font-size:.86rem;font-style:italic;margin-bottom:1.4rem}
+.auth-alt{font-size:.78rem;color:var(--text3);text-align:center;margin-top:.8rem}
+.auth-alt a{color:var(--accent);cursor:pointer;text-decoration:underline}
+
+/* ── FORM ELEMENTS ── */
+.fg{margin-bottom:.75rem}
+.fg label{display:block;font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:.24rem}
+.fi{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);color:var(--text);padding:.42rem .6rem;outline:none;transition:var(--tr);font-size:.88rem}
+.fi:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accentDim)}
+.fta{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);color:var(--text);padding:.42rem .6rem;outline:none;transition:var(--tr);font-size:.88rem;resize:vertical}
+.fta:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accentDim)}
+select.fi{appearance:none;cursor:pointer}
+.err-msg{font-size:.76rem;color:var(--danger);background:rgba(200,88,88,.1);border-radius:var(--r2);padding:.35rem .55rem;margin-bottom:.65rem;display:none}
+.ok-msg{font-size:.76rem;color:var(--accent);background:var(--accentDim);border-radius:var(--r2);padding:.35rem .55rem;margin-bottom:.65rem;display:none}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:.28rem;padding:.36rem .8rem;border:none;border-radius:18px;font-size:.78rem;font-weight:600;cursor:pointer;transition:var(--tr);white-space:nowrap}
+.btn-prim{background:var(--accent);color:var(--accentFg);font-weight:700}
+.btn-prim:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--text2)}
+.btn-ghost:hover{background:var(--bg3);color:var(--text)}
+.btn-out{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.btn-out:hover{background:var(--accent);color:var(--accentFg)}
+.btn-danger{background:transparent;color:var(--danger);border:1.5px solid var(--danger)}
+.btn-danger:hover{background:var(--danger);color:#fff}
+.btn-full{width:100%;justify-content:center;padding:.5rem}
+.btn-sm{padding:.22rem .5rem;font-size:.72rem}
+
+/* ── MODAL ── */
+.mbd{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:500;align-items:center;justify-content:center;padding:1rem}
+.mbd.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;width:100%;box-shadow:var(--shadow);max-height:90vh;overflow-y:auto;animation:mIn .18s cubic-bezier(.34,1.56,.64,1)}
+@keyframes mIn{from{opacity:0;transform:scale(.92) translateY(-10px)}to{opacity:1;transform:none}}
+.modal h2{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:.85rem}
+.m-actions{display:flex;gap:.4rem;justify-content:flex-end;margin-top:1rem}
+
+/* ── TOAST & LOADING ── */
+.toast{position:fixed;bottom:1.4rem;right:1.4rem;z-index:999;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:.6rem .95rem;font-size:.8rem;box-shadow:var(--shadow);transform:translateY(16px);opacity:0;transition:.28s;pointer-events:none;display:flex;align-items:center;gap:.4rem}
+.toast.show{transform:none;opacity:1}
+.toast.ok{border-color:var(--accent);color:var(--accent)}
+.toast.bad{border-color:var(--danger);color:var(--danger)}
+.lov{position:fixed;inset:0;background:rgba(12,15,10,.72);backdrop-filter:blur(4px);z-index:400;display:none;align-items:center;justify-content:center}
+.lov.show{display:flex}
+.spinner{width:30px;height:30px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── SEARCH PAGE ── */
+#search-bar:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accentDim)}
+.sr-section{margin-bottom:1.6rem}
+.sr-section-hd{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:.7rem;color:var(--text2);display:flex;align-items:center;gap:.4rem}
+.sr-book{display:flex;gap:.75rem;align-items:center;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:.65rem .85rem;cursor:pointer;transition:var(--tr);margin-bottom:.4rem}
+.sr-book:hover{border-color:var(--accent);transform:translateX(3px)}
+.sr-book-cov{width:36px;height:52px;border-radius:5px;overflow:hidden;background:var(--bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.sr-book-cov img{width:100%;height:100%;object-fit:cover}
+.sr-book-title{font-weight:700;font-size:.9rem;line-height:1.3}
+.sr-book-author{font-size:.76rem;color:var(--text2);font-style:italic}
+.sr-book-genre{font-size:.65rem;background:var(--accentDim);color:var(--accent);border-radius:8px;padding:.1rem .4rem;font-weight:700;margin-top:.2rem;display:inline-block}
+.sr-user{display:flex;gap:.75rem;align-items:center;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:.65rem .85rem;transition:var(--tr);margin-bottom:.4rem}
+.sr-user:hover{border-color:var(--accent)}
+.sr-user-av{width:38px;height:38px;border-radius:50%;background:var(--accentDim);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700;color:var(--accent);flex-shrink:0;overflow:hidden}
+.sr-user-av img{width:100%;height:100%;object-fit:cover}
+.sr-user-name{font-weight:700;font-size:.9rem}
+.sr-user-bio{font-size:.76rem;color:var(--text2);font-style:italic}
+.sr-empty{text-align:center;padding:2rem;color:var(--text3);font-style:italic}
+
+.site-footer{background:var(--bg2);border-top:1px solid var(--border);padding:1.5rem 2rem;text-align:center;color:var(--text3);font-size:.76rem;font-style:italic;line-height:1.8;position:relative;z-index:1}
+.site-footer strong{color:var(--text2);font-style:normal}
+
+/* ══════════════════════════════
+   АДАПТИВНЫЙ ДИЗАЙН (мобильный)
+══════════════════════════════ */
+@media (max-width: 600px){
+
+  /* ── Топбар ── */
+  .topbar{
+    padding:.4rem .8rem;
+    gap:.2rem;
+    flex-wrap:nowrap;
+  }
+  .topbar img{ height:40px !important; }
+  .logo-beta{ display:none; }
+
+  /* Навигация — скрываем текстовые кнопки, делаем нижнюю панель */
+  nav { display:none !important; }
+  .tb-gap{ display:none; }
+
+  /* Нижняя навигация */
+  .mob-nav{
+    display:flex !important;
+    position:fixed;bottom:0;left:0;right:0;
+    background:var(--bg2);border-top:1px solid var(--border);
+    z-index:300;padding:.3rem 0 calc(.3rem + env(safe-area-inset-bottom));
+  }
+  .mob-nav-btn{
+    flex:1;display:flex;flex-direction:column;align-items:center;
+    gap:.15rem;padding:.4rem .2rem;border:none;background:transparent;
+    color:var(--text3);font-size:.58rem;font-weight:600;cursor:pointer;
+    transition:color .15s;
+  }
+  .mob-nav-btn .mni{ font-size:1.3rem;line-height:1; }
+  .mob-nav-btn.active{ color:var(--accent); }
+
+  /* Контент не перекрывается нижней панелью */
+  .page{ padding-bottom:70px !important; }
+
+  /* ── Hero ── */
+  .hero{ padding:2rem 1rem 1.5rem; }
+  .hero h1{ font-size:2rem; }
+  .hero-stats{ gap:1.2rem; }
+  .hero-btns{ flex-direction:column; align-items:center; }
+  .hero-btns .btn{ width:100%;max-width:280px; }
+
+  /* ── Сетка книг ── */
+  .books-grid{
+    grid-template-columns:repeat(2,1fr) !important;
+    gap:.6rem;
+    padding:.8rem !important;
+  }
+
+  /* ── Жанры ── */
+  .genre-bar{
+    padding:.5rem .8rem;
+    gap:.35rem;
+  }
+
+  /* ── Страница книги ── */
+  .det-wrap{ padding:1rem .9rem; }
+  .det-hero{
+    flex-direction:column;
+    align-items:center;
+    gap:1.2rem;
+    text-align:center;
+  }
+  .det-cov{
+    width:140px;
+    min-width:140px;
+  }
+  .det-meta{ align-items:center; }
+  .det-stats{ justify-content:center; }
+  .det-wrap > div[style*="display:flex;gap:.5rem"]{
+    flex-direction:column;
+  }
+  .dl-btn{ width:100%;justify-content:center; }
+
+  /* ── Профиль ── */
+  .prof-wrap{ padding:1rem .9rem; }
+  .prof-hero{ flex-direction:column;align-items:center;text-align:center; }
+
+  /* ── Загрузка ── */
+  .upload-wrap{ padding:1rem .9rem; }
+
+  /* ── Настройки ── */
+  .sett-wrap{ padding:1rem .9rem; }
+  .th-grid{ grid-template-columns:repeat(3,1fr) !important; }
+
+  /* ── Поиск / Поддержка ── */
+  .page > div[style*="max-width:720px"]{ padding:1rem .9rem !important; }
+  .page > div[style*="max-width:660px"]{ padding:1rem .9rem !important; }
+
+  /* ── Модалки ── */
+  .modal-bg{ align-items:flex-end; }
+  .modal{
+    border-radius:var(--r) var(--r) 0 0 !important;
+    max-height:92vh;
+  }
+
+  /* ── Логин / Регистрация ── */
+  .login-wrap,.reg-wrap{
+    padding:1.5rem .9rem;
+    margin:0;
+  }
+
+  /* ── User profile page ── */
+  #upr-content > div:first-child{
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+  }
+}
+
+/* Планшет */
+@media (min-width:601px) and (max-width:900px){
+  .books-grid{
+    grid-template-columns:repeat(3,1fr) !important;
+  }
+  .topbar img{ height:52px !important; }
+}
+
+/* Скрываем mob-nav на десктопе */
+.mob-nav{ display:none; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo" onclick="nav('home')" style="cursor:pointer;display:flex;align-items:center;gap:.4rem">
+  <img src="assets/RI.png" alt="Roboosk Library" style="height:72px;width:auto;display:block"/>
+  <span class="logo-beta">v1.12</span>
+  </div>
+  <nav style="display:flex;align-items:center;gap:.15rem;flex-wrap:wrap">
+    <button class="nav-btn active" id="nb-home" onclick="nav('home')">Главная</button>
+    <button class="nav-btn" id="nb-search" onclick="nav('search')">Поиск</button>
+    <button class="nav-btn" id="nb-upload" onclick="nav('upload')" style="display:none">Загрузить</button>
+    <button class="nav-btn" id="nb-support" onclick="nav('support')">Поддержка</button>
+    <button class="nav-btn" onclick="toast('Чат в разработке 🚧','bad')" style="opacity:.55;cursor:default">Чат</button>
+    <button class="nav-btn" id="nb-settings" onclick="nav('settings')">⚙ Настройки</button>
+  </nav>
+
+  <div class="tb-gap"></div>
+  <div id="tb-right" style="display:flex;align-items:center;gap:.4rem"></div>
+</header>
+
+<!-- МОБИЛЬНАЯ НАВИГАЦИЯ (нижняя панель) -->
+<nav class="mob-nav" id="mob-nav">
+  <button class="mob-nav-btn active" id="mnb-home" onclick="nav('home')">
+    <span class="mni">🏠</span>Главная
+  </button>
+  <button class="mob-nav-btn" id="mnb-search" onclick="nav('search')">
+    <span class="mni">🔍</span>Поиск
+  </button>
+  <button class="mob-nav-btn" id="mnb-upload" onclick="nav('upload')" style="display:none">
+    <span class="mni">⬆</span>Загрузить
+  </button>
+  <button class="mob-nav-btn" id="mnb-support" onclick="nav('support')">
+    <span class="mni">✉</span>Поддержка
+  </button>
+  <button class="mob-nav-btn" onclick="toast('Чат в разработке 🚧','bad')" style="opacity:.5">
+    <span class="mni">💬</span>Чат
+  </button>
+  <button class="mob-nav-btn" id="mnb-settings" onclick="nav('settings')">
+    <span class="mni">⚙</span>Настройки
+  </button>
+</nav>
+
+<!-- HOME -->
+<div class="page show" id="page-home">
+  <div class="hero">
+    <div class="hero-ey">Открытая библиотека</div>
+    <h1>Читайте.<br/>Делитесь.</h1>
+    <p>Бесплатная библиотека — скачивайте книги и оставляйте отзывы.</p>
+    <div class="hero-btns">
+      <button class="btn btn-prim" style="padding:.5rem 1.3rem;border-radius:20px;font-size:.88rem" onclick="document.querySelector('.genres-bar').scrollIntoView({behavior:'smooth'})">Смотреть книги ↓</button>
+      <button class="btn btn-out" style="padding:.5rem 1.3rem;border-radius:20px;font-size:.88rem" id="hero-login-btn" onclick="nav('login')">Войти</button>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-n" id="st-books">—</div><div class="stat-l">книг</div></div>
+      <div><div class="stat-n" id="st-users">—</div><div class="stat-l">читателей</div></div>
+      <div><div class="stat-n" id="st-dl">—</div><div class="stat-l">скачиваний</div></div>
+    </div>
+  </div>
+  <div class="genres-bar" id="genres-bar">
+    <button class="genre-pill on" onclick="filterGenre(this,'')">Все жанры</button>
+  </div>
+  <div class="sec">
+    <div class="sec-hd">Каталог</div>
+    <div class="books-grid" id="books-grid"></div>
+    <div class="empty" id="books-empty" style="display:none">Книги не найдены</div>
+    <div style="text-align:center;padding:2rem"><div class="spinner" id="books-spin"></div></div>
+  </div>
+  <footer class="site-footer">
+    <strong>Roboosk Library</strong> v1.12 — открытая библиотека от <strong>Romsk</strong><br/>
+    © 2025 Romsk. Все права защищены. · Хранилище: Supabase Cloud
+  </footer>
+</div>
+
+<!-- DETAIL -->
+<div class="page" id="page-detail"></div>
+
+<!-- UPLOAD -->
+<div class="page" id="page-upload">
+  <div class="upload-wrap">
+    <h1>Загрузить книгу</h1>
+    <p>Поделитесь книгой с сообществом Roboosk Library</p>
+    <div class="card">
+      <h2>Информация о книге</h2>
+      <div class="fg"><label>Название *</label><input class="fi" id="u-title" placeholder="Название книги"/></div>
+      <div class="fg"><label>Автор *</label><input class="fi" id="u-author" placeholder="Имя Фамилия"/></div>
+      <div class="fg"><label>Описание</label><textarea class="fta" id="u-desc" rows="3" placeholder="Краткое описание..."></textarea></div>
+      <div class="fg">
+        <label>Жанр</label>
+        <select class="fi" id="u-genre">
+          <option value="">— выбрать —</option>
+          <option>Фантастика</option><option>Фэнтези</option><option>Детектив</option>
+          <option>Роман</option><option>Классика</option><option>Приключения</option>
+          <option>Ужасы</option><option>Наука и техника</option><option>История</option>
+          <option>Психология</option><option>Бизнес</option><option>Самопомощь</option>
+          <option>Поэзия</option><option>Другое</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Обложка</h2>
+      <div class="dz" id="cov-dz" onclick="document.getElementById('cov-fi').click()"
+           ondragover="event.preventDefault();this.classList.add('ov')" ondragleave="this.classList.remove('ov')" ondrop="onCovDrop(event)">
+        <div class="dz-icon">🖼</div>
+        <div id="cov-dz-txt"><b>Перетащите или нажмите</b><br/><small style="opacity:.6">JPG, PNG, WEBP (необязательно)</small></div>
+      </div>
+      <input id="cov-fi" type="file" accept="image/*" style="display:none" onchange="onCovSel(event)"/>
+    </div>
+    <div class="card">
+      <h2>Файл книги *</h2>
+      <div class="dz" id="book-dz" onclick="document.getElementById('book-fi').click()"
+           ondragover="event.preventDefault();this.classList.add('ov')" ondragleave="this.classList.remove('ov')" ondrop="onBookDrop(event)">
+        <div class="dz-icon">📖</div>
+        <div id="book-dz-txt"><b>Перетащите или нажмите</b><br/><small style="opacity:.6">EPUB, FB2, RTF, PDF, TXT и другие форматы</small></div>
+      </div>
+      <input id="book-fi" type="file" style="display:none" onchange="onBookSel(event)"/>
+      <div style="margin-top:.75rem;font-size:.76rem;color:var(--text3)">
+        Или загрузить из RoBoosk: <button class="btn btn-sm btn-out" onclick="document.getElementById('rb-fi').click()">📱 Импорт backup.json</button>
+        <input id="rb-fi" type="file" accept=".json" style="display:none" onchange="onRoboosk(event)"/>
+      </div>
+    </div>
+    <div class="err-msg" id="u-err"></div>
+    <div class="ok-msg" id="u-ok"></div>
+    <button class="btn btn-prim btn-full" onclick="doUpload()">Опубликовать книгу</button>
+    <div style="text-align:center;margin-top:.75rem">
+      <button class="btn btn-ghost btn-sm" onclick="nav('home')">← Назад</button>
+    </div>
+    <!-- RoBoosk import picker -->
+    <div class="card" id="rb-picker" style="display:none;margin-top:1rem">
+      <h2>Выберите книгу из RoBoosk</h2>
+      <div id="rb-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div class="page" id="page-profile">
+  <div class="prof-wrap">
+    <div class="prof-hero">
+      <div class="prof-av" id="prof-av" onclick="document.getElementById('av-fi').click()">
+        <div class="prof-av-ov">📷</div>
+      </div>
+      <input id="av-fi" type="file" accept="image/*" style="display:none" onchange="onAvatar(event)"/>
+      <div>
+        <div class="prof-name-big" id="prof-name-big">—</div>
+        <div class="prof-bio-preview" id="prof-bio-prev">Нажмите чтобы изменить профиль</div>
+        <div id="prof-follow-stats" style="margin-top:.35rem"></div>
+      </div>
+    </div>
+    <div class="card" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem;margin-bottom:.9rem">
+      <h2 style="font-size:.95rem;font-weight:700;margin-bottom:.9rem;color:var(--accent)">✏ Редактировать профиль</h2>
+      <div class="fg"><label>Имя пользователя</label><input class="fi" id="p-name" placeholder="читатель_иван"/></div>
+      <div class="fg"><label>О себе</label><textarea class="fta" id="p-bio" rows="2" placeholder="Немного о себе..."></textarea></div>
+      <div class="err-msg" id="p-err"></div>
+      <div class="ok-msg" id="p-ok"></div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="btn btn-prim btn-sm" onclick="saveProfile()">Сохранить</button>
+        <button class="btn btn-danger btn-sm" onclick="doLogout()">Выйти</button>
+      </div>
+    </div>
+    <div class="card" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem;margin-bottom:.9rem">
+      <h2 style="font-size:.95rem;font-weight:700;margin-bottom:.9rem;color:var(--accent)">Мои загруженные книги</h2>
+      <div id="my-books-list"><div style="color:var(--text3);font-style:italic;font-size:.84rem">Загрузка...</div></div>
+    </div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="nav('home')">← На главную</button>
+      <div id="admin-badge" style="display:none;font-size:.72rem;background:var(--accentDim);color:var(--accent);border-radius:10px;padding:.2rem .6rem;font-weight:700">⭐ Администратор</div>
+    </div>
+  </div>
+</div>
+
+<!-- USER PROFILE VIEW (чужой профиль) -->
+<div class="page" id="page-user-profile">
+  <div style="max-width:720px;margin:0 auto;padding:2rem 1.6rem">
+    <button class="btn btn-ghost btn-sm" id="upr-back" onclick="nav('search')" style="margin-bottom:1.2rem">← Назад к поиску</button>
+    <div id="upr-content">
+      <div style="text-align:center;padding:3rem;color:var(--text3)">Загрузка...</div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page" id="page-settings">
+  <div class="sett-wrap">
+    <h1>⚙ Настройки</h1>
+    <p>Персонализация и информация о приложении</p>
+    <div class="card" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem;margin-bottom:.9rem">
+      <div style="font-size:.88rem;font-weight:700;margin-bottom:.15rem">🎨 Тема оформления</div>
+      <div style="font-size:.76rem;color:var(--text3);margin-bottom:.5rem">Выберите цветовую схему</div>
+      <div class="th-grid" id="th-grid"></div>
+    </div>
+    <div class="card" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem;margin-bottom:.9rem">
+      <div style="font-size:.88rem;font-weight:700;margin-bottom:.85rem">ℹ О библиотеке</div>
+      <div class="irow"><span>Название</span><strong>Roboosk Library</strong></div>
+      <div class="irow"><span>Версия</span><strong>v1.12</strong></div>
+      <div class="irow"><span>Правообладатель</span><strong>Romsk</strong></div>
+      <div class="irow"><span>Copyright</span><strong>© 2025 Romsk</strong></div>
+      <div class="irow"><span>Хранилище</span><strong>Supabase Cloud</strong></div>
+      <div class="irow"><span>Загрузка книг</span><strong>Доступна всем пользователям</strong></div>
+      <p style="margin-top:.75rem;font-size:.73rem;color:var(--text3);line-height:1.6">
+        Roboosk Library — открытая библиотека от компании Romsk. Все книги предоставлены пользователями для личного чтения.
+      </p>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="nav('home')">← На главную</button>
+  </div>
+</div>
+
+<!-- SUPPORT PAGE -->
+<div class="page" id="page-support">
+  <div style="max-width:720px;margin:0 auto;padding:2rem 1.6rem">
+    <h1 style="font-family:'Playfair Display',serif;font-size:1.8rem;margin-bottom:.3rem">Поддержка</h1>
+    <p style="color:var(--text2);font-style:italic;margin-bottom:1.8rem;font-size:.9rem">Задайте вопрос, оставьте пожелание или сообщите о проблеме</p>
+
+    <!-- SEND MESSAGE -->
+    <div class="card" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem;margin-bottom:1.2rem">
+      <div style="font-size:.95rem;font-weight:700;margin-bottom:.9rem;color:var(--accent)">✉ Написать нам</div>
+      <div class="fg" style="margin-bottom:.7rem">
+        <label style="font-size:.78rem;color:var(--text2);display:block;margin-bottom:.3rem">Тип обращения</label>
+        <select class="fi" id="sup-type" style="width:100%">
+          <option value="question">❓ Вопрос</option>
+          <option value="suggestion">💡 Пожелание / идея</option>
+          <option value="bug">🐛 Сообщить об ошибке</option>
+          <option value="review">⭐ Отзыв о сайте</option>
+          <option value="other">📝 Другое</option>
+        </select>
+      </div>
+      <div class="fg" id="sup-email-wrap" style="margin-bottom:.7rem;display:none">
+        <label style="font-size:.78rem;color:var(--text2);display:block;margin-bottom:.3rem">Ваш email (необязательно, для ответа)</label>
+        <input class="fi" id="sup-email" type="email" placeholder="your@email.com"/>
+      </div>
+      <div class="fg" style="margin-bottom:.7rem">
+        <label style="font-size:.78rem;color:var(--text2);display:block;margin-bottom:.3rem">Сообщение *</label>
+        <textarea class="fta" id="sup-msg" rows="4" placeholder="Опишите ваш вопрос или пожелание..."></textarea>
+      </div>
+      <div class="err-msg" id="sup-err"></div>
+      <div class="ok-msg" id="sup-ok"></div>
+      <button class="btn btn-prim btn-sm" onclick="submitSupport()" style="margin-top:.5rem">Отправить</button>
+    </div>
+
+    <!-- FAQ -->
+    <div class="card" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem">
+      <div style="font-size:.95rem;font-weight:700;margin-bottom:1rem;color:var(--accent)">❓ Частые вопросы</div>
+      <div id="faq-list">
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Как загрузить книгу?<span class="faq-arr">▾</span></div>
+          <div class="faq-a">Войдите в аккаунт, затем нажмите «Загрузить» в навигации. Поддерживаются форматы EPUB, FB2, RTF, PDF, TXT и другие. Заполните название, автора и выберите файл.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Как читать книгу онлайн?<span class="faq-arr">▾</span></div>
+          <div class="faq-a">На странице книги нажмите «Открыть в RoBoosk» — книга откроется в нашем приложении-читалке прямо в браузере. Читалка поддерживает закладки, регулировку шрифта и 6 тем оформления.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Книги бесплатны?<span class="faq-arr">▾</span></div>
+          <div class="faq-a">Да, все книги на Roboosk Library загружены пользователями и доступны бесплатно для личного чтения.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Как оставить отзыв на книгу?<span class="faq-arr">▾</span></div>
+          <div class="faq-a">Зайдите на страницу книги, прокрутите вниз до раздела «Отзывы читателей». Поставьте оценку звёздочками и напишите текст. Нужно быть авторизованным.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Можно ли подписаться на автора?<span class="faq-arr">▾</span></div>
+          <div class="faq-a">Да! На странице любого пользователя есть кнопка «Подписаться». Новые книги подписок появляются в разделе «Подписки» на главной странице.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Как установить приложение на телефон?<span class="faq-arr">▾</span></div>
+          <div class="faq-a">На Android: откройте сайт в Chrome, нажмите «⋮» → «Добавить на главный экран». На iPhone: откройте в Safari, нажмите «Поделиться» → «На экран Домой». Приложение установится без App Store.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Забыл пароль — что делать?<span class="faq-arr">▾</span></div>
+          <div class="faq-a">На странице входа нажмите «Забыли пароль?» — на ваш email придёт ссылка для сброса пароля.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Как удалить свою книгу?<span class="faq-arr">▾</span></div>
+          <div class="faq-a">Откройте страницу книги или зайдите в профиль → «Мои книги». Нажмите кнопку удаления (🗑). Действие необратимо.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEARCH PAGE -->
+<div class="page" id="page-search">
+  <div style="max-width:720px;margin:0 auto;padding:2rem 1.6rem">
+    <h1 style="font-family:'Playfair Display',serif;font-size:1.8rem;margin-bottom:.4rem">Поиск</h1>
+    <p style="color:var(--text2);font-style:italic;margin-bottom:1.2rem;font-size:.88rem">Ищите книги и пользователей</p>
+    <div style="display:flex;gap:.5rem;margin-bottom:1.5rem">
+      <div style="flex:1;display:flex;align-items:center;gap:.5rem;background:var(--bg2);border:2px solid var(--border);border-radius:var(--r);padding:.55rem 1rem;transition:var(--tr)" id="search-bar">
+        
+        <input id="search-big-inp" placeholder="Введите запрос — книги, авторы, пользователи..." style="flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:.95rem;font-family:inherit" oninput="doSearch()" onkeydown="if(event.key==='Escape'){this.value='';doSearch()}"/>
+        <button onclick="document.getElementById('search-big-inp').value='';doSearch()" style="background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:1rem;padding:0;line-height:1" title="Очистить">✕</button>
+      </div>
+    </div>
+    <!-- Filters -->
+    <div style="display:flex;gap:.4rem;margin-bottom:1.4rem;flex-wrap:wrap" id="search-filters">
+      <button class="genre-pill on" data-f="all" onclick="setSearchFilter(this,'all')">Всё</button>
+      <button class="genre-pill" data-f="books" onclick="setSearchFilter(this,'books')">Книги</button>
+      <button class="genre-pill" data-f="users" onclick="setSearchFilter(this,'users')">👤 Пользователи</button>
+    </div>
+    <div id="search-results">
+      <div style="text-align:center;padding:3rem;color:var(--text3);font-style:italic">Начните вводить запрос...</div>
+    </div>
+  </div>
+</div>
+
+<!-- PREVIEW MODAL -->
+<div class="mbd" id="m-preview">
+  <div class="modal" style="max-width:680px;width:100%">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.9rem">
+      <h2 id="preview-title" style="margin:0;flex:1;padding-right:1rem">Предпросмотр</h2>
+      <button onclick="closeM('m-preview')" style="background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:1.2rem;line-height:1;flex-shrink:0">✕</button>
+    </div>
+    <div id="preview-body" style="font-family:Georgia,serif;font-size:.9rem;line-height:1.8;color:var(--text);white-space:pre-wrap;max-height:60vh;overflow-y:auto;border-top:1px solid var(--border);padding-top:.9rem;word-break:break-word"></div>
+    <div style="margin-top:.9rem;padding-top:.75rem;border-top:1px solid var(--border);font-size:.75rem;color:var(--text3);font-style:italic;text-align:center">— Предпросмотр ограничен первой страницей —</div>
+    <div class="m-actions" style="margin-top:.75rem">
+      <button class="btn btn-ghost" onclick="closeM('m-preview')">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT BOOK MODAL -->
+<div class="mbd" id="m-edit">
+  <div class="modal" style="max-width:520px">
+    <h2>✏ Редактировать книгу</h2>
+    <input type="hidden" id="edit-book-id"/>
+    <div class="fg"><label>Название *</label><input class="fi" id="edit-title" placeholder="Название книги"/></div>
+    <div class="fg"><label>Автор *</label><input class="fi" id="edit-author" placeholder="Имя Фамилия"/></div>
+    <div class="fg"><label>Описание</label><textarea class="fta" id="edit-desc" rows="3" placeholder="Краткое описание..."></textarea></div>
+    <div class="fg">
+      <label>Жанр</label>
+      <select class="fi" id="edit-genre">
+        <option value="">— выбрать —</option>
+        <option>Фантастика</option><option>Фэнтези</option><option>Детектив</option>
+        <option>Роман</option><option>Классика</option><option>Приключения</option>
+        <option>Ужасы</option><option>Наука и техника</option><option>История</option>
+        <option>Психология</option><option>Бизнес</option><option>Самопомощь</option>
+        <option>Поэзия</option><option>Другое</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Заменить обложку (необязательно)</label>
+      <div class="dz" id="edit-cov-dz" onclick="document.getElementById('edit-cov-fi').click()" style="padding:1rem">
+        <div id="edit-cov-txt" style="font-size:.82rem;color:var(--text2)">🖼 Нажмите чтобы выбрать новую обложку</div>
+      </div>
+      <input id="edit-cov-fi" type="file" accept="image/*" style="display:none" onchange="onEditCov(event)"/>
+    </div>
+    <div class="fg">
+      <label>Заменить файл книги (необязательно)</label>
+      <div class="dz" id="edit-file-dz" onclick="document.getElementById('edit-book-fi').click()" style="padding:1rem">
+        <div id="edit-file-txt" style="font-size:.82rem;color:var(--text2)">📄 Нажмите чтобы выбрать новый файл</div>
+      </div>
+      <input id="edit-book-fi" type="file" accept=".epub,.fb2,.rtf,.txt,.pdf,.docx,.odt,.html,.htm" style="display:none" onchange="onEditFile(event)"/>
+    </div>
+    <div class="err-msg" id="edit-err"></div>
+    <div class="ok-msg" id="edit-ok"></div>
+    <div class="m-actions">
+      <button class="btn btn-ghost" onclick="closeM('m-edit')">Отмена</button>
+      <button class="btn btn-prim" onclick="saveEditBook()">💾 Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="page" id="page-login">
+  <div class="auth-wrap">
+    <h1>С возвращением</h1>
+    <p>Войдите чтобы загружать книги и оставлять отзывы</p>
+    <div class="err-msg" id="l-err"></div>
+    <div class="fg"><label>Email</label><input class="fi" id="l-email" type="email" placeholder="your@email.com"/></div>
+    <div class="fg"><label>Пароль</label><input class="fi" id="l-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="btn btn-prim btn-full" onclick="doLogin()">Войти</button>
+    <div class="auth-alt">Нет аккаунта? <a onclick="nav('register')">Регистрация</a></div>
+    <div class="auth-alt" style="margin-top:.4rem"><a onclick="nav('home')">← Назад</a></div>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div class="page" id="page-register">
+  <div class="auth-wrap">
+    <h1>Добро пожаловать</h1>
+    <p>Создайте аккаунт — загружайте книги и общайтесь</p>
+    <div class="err-msg" id="r-err"></div>
+    <div class="ok-msg" id="r-ok"></div>
+    <div class="fg"><label>Имя пользователя</label><input class="fi" id="r-name" placeholder="читатель_иван"/></div>
+    <div class="fg"><label>Email</label><input class="fi" id="r-email" type="email" placeholder="your@email.com"/></div>
+    <div class="fg"><label>Пароль</label><input class="fi" id="r-pass" type="password" placeholder="Минимум 6 символов" onkeydown="if(event.key==='Enter')doRegister()"/></div>
+    <button class="btn btn-prim btn-full" onclick="doRegister()">Создать аккаунт</button>
+    <div class="auth-alt">Уже есть аккаунт? <a onclick="nav('login')">Войти</a></div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="lov" id="lov"><div class="spinner"></div></div>
+<div class="toast" id="toast"></div>
+
+<!-- DELETE CONFIRM -->
+<div class="mbd" id="m-del">
+  <div class="modal" style="max-width:340px">
+    <h2>Удалить книгу?</h2>
+    <p style="color:var(--text2);font-size:.86rem">Это действие нельзя отменить.</p>
+    <div class="m-actions">
+      <button class="btn btn-ghost" onclick="closeM('m-del')">Отмена</button>
+      <button class="btn btn-danger" onclick="confirmDel()">🗑 Удалить</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+"use strict";
+const SURL = 'https://emqbosamvstewjrysveh.supabase.co';
+const SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtcWJvc2FtdnN0ZXdqcnlzdmVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzM3NTYsImV4cCI6MjA4NzI0OTc1Nn0.274Kvn0v-OKSuD5oSFTrKlUjzHDopNEuki_SqATG4YU';
+const sb = supabase.createClient(SURL, SKEY);
+
+let curUser = null, curProfile = null;
+let allBooks = [], curGenre = '', curSearch = '';
+let covFile = null, bookFile = null, delBookId = null;
+let rbBooks = []; // roboosk imported books
+
+// ── THEMES ──
+const THEMES = [
+  {k:'forest',  n:'🌲 Лесная',   c:'',          dot:['#6dbe8a','#131810']},
+  {k:'midnight',n:'🌑 Полночь',  c:'th-midnight',dot:['#7c6af7','#13131a']},
+  {k:'ocean',   n:'🌊 Океан',    c:'th-ocean',   dot:['#38bdf8','#0c1828']},
+  {k:'rose',    n:'🌸 Розовая',  c:'th-rose',    dot:['#f472b6','#24131a']},
+  {k:'parch',   n:'📜 Пергамент',c:'th-parch',   dot:['#8b5e3c','#f5f0e8']},
+  {k:'slate',   n:'🪨 Серая',    c:'th-slate',   dot:['#5865f2','#e8eaed']},
+];
+let curTheme = localStorage.getItem('rl_theme')||'forest';
+
+function applyTheme(k){
+  curTheme = k;
+  THEMES.forEach(t=>{ if(t.c) document.body.classList.remove(t.c); });
+  const t = THEMES.find(t=>t.k===k);
+  if(t && t.c) document.body.classList.add(t.c);
+  localStorage.setItem('rl_theme', k);
+  document.querySelectorAll('.th-btn').forEach(b=>b.classList.toggle('sel', b.dataset.k===k));
+}
+function buildThemeGrid(){
+  const g = document.getElementById('th-grid'); if(!g) return;
+  g.innerHTML = THEMES.map(t=>`
+    <button class="th-btn${t.k===curTheme?' sel':''}" data-k="${t.k}" onclick="applyTheme('${t.k}')">
+      <div class="th-dot" style="background:linear-gradient(135deg,${t.dot[0]},${t.dot[1]})"></div>
+      <span>${t.n}</span>
+    </button>`).join('');
+}
+applyTheme(curTheme);
+
+// ── INIT ──
+(async()=>{
+  const {data:{session}} = await sb.auth.getSession();
+  if(session){ curUser=session.user; await loadProfile(); }
+  sb.auth.onAuthStateChange(async(_,sess)=>{
+    curUser=sess?.user||null;
+    if(curUser) await loadProfile(); else { curProfile=null; }
+    renderTopbar();
+  });
+  renderTopbar();
+  buildThemeGrid();
+  await loadBooks();
+  loadStats();
+})();
+
+// ── NAV ──
+function nav(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('show'));
+  document.getElementById('page-'+id).classList.add('show');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const nb = document.getElementById('nb-'+id);
+  if(nb) nb.classList.add('active');
+  window.scrollTo(0,0);
+  // Мобильная навигация
+  document.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('active'));
+  const mnb = document.getElementById('mnb-'+id);
+  if(mnb) mnb.classList.add('active');
+  if(id==='settings') buildThemeGrid();
+  if(id==='profile') loadProfilePage();
+  if(id==='upload' && !curUser){ nav('login'); return; }
+  if(id==='home'){
+    curSearch='';
+    renderBooks();
+  }
+  if(id==='support'){
+    // Show email field only for non-logged-in users
+    const emailWrap=document.getElementById('sup-email-wrap');
+    if(emailWrap) emailWrap.style.display=curUser?'none':'block';
+  }
+}
+function closeM(id){ document.getElementById(id).classList.remove('open'); }
+function openM(id){ document.getElementById(id).classList.add('open'); }
+
+// ── TOPBAR ──
+function renderTopbar(){
+  const right = document.getElementById('tb-right');
+  const heroBtn = document.getElementById('hero-login-btn');
+  const uploadBtn = document.getElementById('nb-upload');
+  const mobUploadBtn = document.getElementById('mnb-upload');
+  if(!curUser){
+    right.innerHTML=`
+      <button class="nav-btn" onclick="nav('login')">Войти</button>
+      <button class="tb-prim" onclick="nav('register')">Регистрация</button>`;
+    if(heroBtn) heroBtn.style.display='';
+    if(uploadBtn) uploadBtn.style.display='none';
+    if(mobUploadBtn) mobUploadBtn.style.display='none';
+  } else {
+    const name = curProfile?.username || curUser.email.split('@')[0];
+    const initials = name[0].toUpperCase();
+    const avHtml = curProfile?.avatar_url
+      ? `<img src="${curProfile.avatar_url}" alt=""/>`
+      : initials;
+    right.innerHTML=`
+      <div class="avatar-btn" onclick="nav('profile')" title="${esc(name)}">${avHtml}</div>`;
+    if(heroBtn) heroBtn.style.display='none';
+    if(uploadBtn) uploadBtn.style.display='inline-flex';
+    if(mobUploadBtn) mobUploadBtn.style.display='flex';
+  }
+}
+
+// ── PROFILE ──
+async function loadProfile(){
+  if(!curUser) return;
+  const {data} = await sb.from('profiles').select('*').eq('id',curUser.id).single();
+  curProfile = data;
+}
+async function loadProfilePage(){
+  if(!curUser){ nav('login'); return; }
+  await loadProfile();
+  const p = curProfile;
+  const name = p?.username||curUser.email.split('@')[0];
+  document.getElementById('prof-name-big').textContent = name;
+  document.getElementById('prof-bio-prev').textContent = p?.bio||'Нажмите чтобы изменить профиль';
+  document.getElementById('p-name').value = name;
+  document.getElementById('p-bio').value = p?.bio||'';
+  // Avatar
+  const avEl = document.getElementById('prof-av');
+  if(p?.avatar_url){
+    avEl.innerHTML=`<img src="${esc(p.avatar_url)}" alt=""/><div class="prof-av-ov">📷</div>`;
+  } else {
+    avEl.innerHTML=`${name[0].toUpperCase()}<div class="prof-av-ov">📷</div>`;
+  }
+  // Admin badge
+  document.getElementById('admin-badge').style.display = p?.is_admin ? 'inline-flex' : 'none';
+  // Followers / following count
+  const [{data:followers},{data:following}] = await Promise.all([
+    sb.from('follows').select('id',{count:'exact',head:true}).eq('following_id',curUser.id),
+    sb.from('follows').select('id',{count:'exact',head:true}).eq('follower_id',curUser.id)
+  ]);
+  const fEl = document.getElementById('prof-follow-stats');
+  if(fEl){
+    fEl.innerHTML = `<span style="font-size:.82rem;color:var(--text2)">
+      <strong style="color:var(--text)">${followers?.length??0}</strong> подписчиков &nbsp;·&nbsp;
+      <strong style="color:var(--text)">${following?.length??0}</strong> подписок
+    </span>`;
+  }
+  // My books
+  const {data:myBooks} = await sb.from('books').select('id,title,author,downloads,created_at')
+    .eq('uploaded_by',curUser.id).order('created_at',{ascending:false});
+  const listEl = document.getElementById('my-books-list');
+  if(!myBooks?.length){
+    listEl.innerHTML='<div style="color:var(--text3);font-style:italic;font-size:.84rem">Вы ещё не загружали книги</div>';
+  } else {
+    listEl.innerHTML = myBooks.map(b=>`
+      <div style="display:flex;align-items:center;gap:.6rem;padding:.45rem 0;border-bottom:1px solid var(--border)">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:.84rem;font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${esc(b.title)}</div>
+          <div style="font-size:.7rem;color:var(--text2);font-style:italic">${esc(b.author)} · ↓${b.downloads||0}</div>
+        </div>
+        <button class="btn btn-sm btn-out" onclick="openEditBook('${b.id}')">✏</button>
+        <button class="btn btn-sm btn-ghost" onclick="openBook('${b.id}')">👁</button>
+        <button class="btn btn-sm btn-danger" onclick="askDel('${b.id}')">🗑</button>
+      </div>`).join('');
+  }
+}
+async function onAvatar(e){
+  const file = e.target.files[0]; if(!file||!curUser) return;
+  setLoading(true);
+  const path = `${curUser.id}/avatar_${Date.now()}.${file.name.split('.').pop()}`;
+  const {error:upErr} = await sb.storage.from('avatars').upload(path,file,{upsert:true});
+  if(upErr){ toast('Ошибка загрузки фото','bad'); setLoading(false); return; }
+  const {data} = sb.storage.from('avatars').getPublicUrl(path);
+  await sb.from('profiles').update({avatar_url:data.publicUrl}).eq('id',curUser.id);
+  await loadProfile();
+  renderTopbar();
+  loadProfilePage();
+  setLoading(false);
+  toast('Фото обновлено!');
+}
+async function saveProfile(){
+  const name = document.getElementById('p-name').value.trim();
+  const bio  = document.getElementById('p-bio').value.trim();
+  const errEl=document.getElementById('p-err'), okEl=document.getElementById('p-ok');
+  errEl.style.display='none'; okEl.style.display='none';
+  if(!name){ errEl.textContent='Имя не может быть пустым'; errEl.style.display='block'; return; }
+  const {error} = await sb.from('profiles').update({username:name,bio:bio||null}).eq('id',curUser.id);
+  if(error){ errEl.textContent='Ошибка: '+error.message; errEl.style.display='block'; return; }
+  await loadProfile(); renderTopbar();
+  okEl.textContent='Профиль сохранён!'; okEl.style.display='block';
+  document.getElementById('prof-name-big').textContent=name;
+  document.getElementById('prof-bio-prev').textContent=bio||'';
+}
+
+// ── BOOKS ──
+async function loadBooks(){
+  document.getElementById('books-spin').style.display='block';
+  document.getElementById('books-grid').innerHTML='';
+  document.getElementById('books-empty').style.display='none';
+  const {data} = await sb.from('books').select('*').order('created_at',{ascending:false});
+  document.getElementById('books-spin').style.display='none';
+  allBooks = data||[];
+  buildGenres(); renderBooks();
+}
+function buildGenres(){
+  const genres=[...new Set(allBooks.map(b=>b.genre).filter(Boolean))].sort();
+  document.getElementById('genres-bar').innerHTML=
+    `<button class="genre-pill on" onclick="filterGenre(this,'')">Все жанры</button>`+
+    genres.map(g=>`<button class="genre-pill" onclick="filterGenre(this,'${g}')">${g}</button>`).join('');
+}
+function filterGenre(btn,g){
+  curGenre=g;
+  document.querySelectorAll('.genre-pill').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on'); renderBooks();
+}
+function onSearch(){ }
+function renderBooks(){
+  let books=allBooks;
+  if(curGenre) books=books.filter(b=>b.genre===curGenre);
+  if(curSearch) books=books.filter(b=>(b.title+b.author+(b.description||'')).toLowerCase().includes(curSearch));
+  const grid=document.getElementById('books-grid'), empty=document.getElementById('books-empty');
+  if(!books.length){ grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  grid.innerHTML=books.map(b=>{
+    const cov=b.cover_url?`<img src="${b.cover_url}" alt="" loading="lazy"/>`:`<div class="bk-ph"><div class="bk-ph-i">📖</div><div class="bk-ph-t">${esc(b.title)}</div></div>`;
+    return `<div class="bk" onclick="openBook('${b.id}')">
+      <div class="bk-cov">${cov}</div>
+      <div class="bk-inf">
+        <div class="bk-title">${esc(b.title)}</div>
+        <div class="bk-author">${esc(b.author)}</div>
+        <div class="bk-foot"><div class="bk-stars"></div><div class="bk-dl">↓${b.downloads||0}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function loadStats(){
+  const [{count:bc},{count:uc},{data:dd}] = await Promise.all([
+    sb.from('books').select('*',{count:'exact',head:true}),
+    sb.from('profiles').select('*',{count:'exact',head:true}),
+    sb.from('books').select('downloads'),
+  ]);
+  const dl=(dd||[]).reduce((s,b)=>s+(b.downloads||0),0);
+  document.getElementById('st-books').textContent=bc||0;
+  document.getElementById('st-users').textContent=uc||0;
+  document.getElementById('st-dl').textContent=dl>999?(dl/1000).toFixed(1)+'k':dl;
+}
+
+// ── BOOK DETAIL ──
+async function openBook(id){
+  nav('detail');
+  const page=document.getElementById('page-detail');
+  page.innerHTML='<div class="det-wrap"><div class="spinner" style="margin:3rem auto"></div></div>';
+  const [{data:book},{data:rvs}] = await Promise.all([
+    sb.from('books').select('*').eq('id',id).single(),
+    sb.from('reviews').select('*,profiles(username)').eq('book_id',id).order('created_at',{ascending:false})
+  ]);
+  if(!book){ page.innerHTML='<div class="det-wrap"><p style="color:var(--danger)">Ошибка загрузки</p></div>'; return; }
+  // Загружаем профиль загрузившего
+  let uploaderName = null, uploaderId = null;
+  if(book.uploaded_by){
+    const {data:up} = await sb.from('profiles').select('id,username').eq('id',book.uploaded_by).single();
+    if(up){ uploaderName = up.username||'Читатель'; uploaderId = up.id; }
+  }
+  const rvList=rvs||[];
+  const avg=rvList.length?(rvList.reduce((s,r)=>s+r.rating,0)/rvList.length).toFixed(1):null;
+  const cov=book.cover_url?`<img src="${esc(book.cover_url)}" alt=""/>`:`<div class="det-cov-ph">📖</div>`;
+  const starsDisp=avg?`${'★'.repeat(Math.round(avg))}${'☆'.repeat(5-Math.round(avg))} ${avg}`:'Нет оценок';
+  const canDelete=curUser&&(curProfile?.is_admin||curUser.id===book.uploaded_by);
+  page.innerHTML=`<div class="det-wrap">
+    <button class="back-btn" onclick="nav('home')">← Назад</button>
+    <div class="det-hero">
+      <div class="det-cov">${cov}</div>
+      <div class="det-meta">
+        ${book.genre?`<div class="det-genre">${esc(book.genre)}</div>`:''}
+        <div class="det-title">${esc(book.title)}</div>
+        <div class="det-author">${esc(book.author)}</div>
+        <div class="det-stats">
+          <div><div class="det-stat-n" style="color:var(--gold);font-size:.95rem">${starsDisp}</div><div class="det-stat-l">рейтинг</div></div>
+          <div><div class="det-stat-n">${rvList.length}</div><div class="det-stat-l">отзывов</div></div>
+          <div><div class="det-stat-n">${book.downloads||0}</div><div class="det-stat-l">скачиваний</div></div>
+          ${book.file_size?`<div><div class="det-stat-n" style="font-size:.88rem">${fmtSize(book.file_size)}</div><div class="det-stat-l">размер</div></div>`:''}
+        </div>
+        ${book.description?`<div class="det-desc">${esc(book.description)}</div>`:''}
+        ${uploaderName?`<div style="font-size:.75rem;color:var(--text3);margin-top:.4rem">📤 Добавил: <span onclick="openUserProfile('${uploaderId}')" style="color:var(--accent);cursor:pointer;text-decoration:underline dotted">${esc(uploaderName)}</span></div>`:''}
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:auto;padding-top:.6rem">
+          <button class="dl-btn" onclick="dlBook('${book.id}','${esc(book.file_url)}','${esc(book.file_name)}')">⬇ Скачать</button>
+          <button class="dl-btn" style="background:var(--bg3);color:var(--text2);border:1.5px solid var(--border)" onclick="openPreview('${esc(book.file_url)}','${esc(book.file_name)}','${esc(book.title)}')">👁 Предпросмотр</button>
+          <button id="tts-btn" class="dl-btn" style="background:var(--bg3);color:var(--text2);border:1.5px solid var(--border)" onclick="toggleTTS()">🔊 Озвучить</button>
+          <button class="dl-btn" style="background:var(--bg3);color:var(--accent);border:1.5px solid var(--accent)" onclick="openInRoboosk('${esc(book.file_url)}','${esc(book.file_name)}','${esc(book.title)}','${esc(book.author)}','${esc(book.cover_url||'')}')">📖 Открыть в RoBoosk</button>
+          ${canDelete?`
+          <button class="btn btn-out btn-sm" onclick="openEditBook('${book.id}')">✏ Редактировать</button>
+          <button class="btn btn-danger btn-sm" onclick="askDel('${book.id}')">🗑 Удалить</button>
+          `:''}
+        </div>
+      </div>
+    </div>
+    <div class="rv-sec">
+      <h2>Отзывы читателей</h2>
+      ${curUser?renderWriteRv(id):`<p style="color:var(--text3);font-style:italic;margin-bottom:.9rem"><a onclick="nav('login')" style="color:var(--accent);cursor:pointer">Войдите</a>, чтобы оставить отзыв</p>`}
+      <div id="rv-list">${rvList.length?rvList.map(renderRv).join(''):'<p style="color:var(--text3);font-style:italic">Будьте первым!</p>'}</div>
+    </div>
+  </div>`;
+}
+function renderWriteRv(bid){
+  return `<div class="write-rv">
+    <h3>Ваш отзыв</h3>
+    <div class="stars-row">${[1,2,3,4,5].map(n=>`<span class="star" onclick="setStar(${n})">★</span>`).join('')}</div>
+    <textarea class="fta" id="rv-txt" rows="3" placeholder="Поделитесь впечатлениями..." style="margin-bottom:.5rem"></textarea>
+    <button class="btn btn-prim btn-sm" onclick="submitRv('${bid}')">Опубликовать</button>
+    <div class="err-msg" id="rv-err" style="margin-top:.4rem"></div>
+  </div>`;
+}
+function renderRv(r){
+  const stars='★'.repeat(r.rating)+'☆'.repeat(5-r.rating);
+  return `<div class="rv-card">
+    <div class="rv-hd"><span class="rv-user">${esc(r.profiles?.username||'Читатель')}</span><span class="rv-stars">${stars}</span></div>
+    ${r.text?`<div class="rv-text">${esc(r.text)}</div>`:''}
+    <div class="rv-date">${new Date(r.created_at).toLocaleDateString('ru-RU')}</div>
+  </div>`;
+}
+let curStars=0;
+function setStar(n){
+  curStars=n;
+  document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('on',i<n));
+}
+async function submitRv(bid){
+  const errEl=document.getElementById('rv-err'); errEl.style.display='none';
+  if(!curUser){ nav('login'); return; }
+  if(!curStars){ errEl.textContent='Поставьте оценку ★'; errEl.style.display='block'; return; }
+  const text=document.getElementById('rv-txt').value.trim();
+  // Попробуем insert, если дубликат — обновим
+  const payload = {book_id:bid, user_id:curUser.id, rating:curStars, text:text||null};
+  const {error:insErr} = await sb.from('reviews').insert(payload);
+  if(insErr){
+    // Если уже есть отзыв — обновляем
+    if(insErr.code === '23505' || insErr.message?.includes('duplicate') || insErr.message?.includes('unique')){
+      const {error:updErr} = await sb.from('reviews')
+        .update({rating:curStars, text:text||null})
+        .eq('book_id',bid).eq('user_id',curUser.id);
+      if(updErr){ errEl.textContent='Ошибка обновления: '+updErr.message; errEl.style.display='block'; return; }
+    } else {
+      errEl.textContent='Ошибка: '+insErr.message; errEl.style.display='block'; return;
+    }
+  }
+  curStars=0;
+  toast('Отзыв опубликован! 🎉');
+  openBook(bid);
+}
+async function dlBook(id,url,fname){
+  // Update counter locally first (instant UI), then persist
+  const book = allBooks.find(b=>b.id===id);
+  if(book) book.downloads = (book.downloads||0)+1;
+  await sb.from('books').update({downloads: book?.downloads||1}).eq('id',id);
+  const a=document.createElement('a'); a.href=url; a.download=fname; a.target='_blank';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  toast('Скачивание началось!');
+}
+
+function openInRoboosk(fileUrl, fileName, title, author, coverUrl){
+  const ROBOOSK_URL = 'https://romskn.github.io/Roboosk/';
+  const bookData = {
+    id: 'rl_' + Date.now(),
+    title: title || fileName,
+    author: author || '',
+    description: '',
+    cover: coverUrl || null,
+    rawText: '',
+    fileUrl: fileUrl,      // RoBoosk скачает файл сам
+    fileName: fileName,
+    fromLibrary: true,
+    createdAt: Date.now(),
+    updatedAt: Date.now()
+  };
+  try {
+    localStorage.setItem('roboosk_import', JSON.stringify(bookData));
+    toast('Открываем в RoBoosk...');
+    window.open(ROBOOSK_URL, '_blank');
+  } catch(e) {
+    // localStorage может быть недоступен — fallback через URL параметр
+    const params = new URLSearchParams({
+      import_title: title||'',
+      import_author: author||'',
+      import_url: fileUrl,
+      import_cover: coverUrl||''
+    });
+    window.open(ROBOOSK_URL + '?' + params.toString(), '_blank');
+  }
+}
+function askDel(id){ delBookId=id; openM('m-del'); }
+async function confirmDel(){
+  if(!delBookId) return;
+  setLoading(true);
+  await sb.from('books').delete().eq('id',delBookId);
+  setLoading(false); closeM('m-del'); delBookId=null;
+  toast('Книга удалена'); loadBooks();
+  const cur=document.getElementById('page-detail');
+  if(cur?.classList.contains('show')) nav('home');
+  if(document.getElementById('page-profile')?.classList.contains('show')) loadProfilePage();
+}
+
+// ── UPLOAD ──
+function onCovDrop(e){ e.preventDefault(); document.getElementById('cov-dz').classList.remove('ov'); covFile=e.dataTransfer.files[0]; updateCovUI(); }
+function onCovSel(e){ covFile=e.target.files[0]; updateCovUI(); }
+function updateCovUI(){ if(!covFile) return; document.getElementById('cov-dz').classList.add('has'); document.getElementById('cov-dz-txt').innerHTML=`✅ <b>${covFile.name}</b><br/><small>${fmtSize(covFile.size)}</small>`; }
+function onBookDrop(e){ e.preventDefault(); document.getElementById('book-dz').classList.remove('ov'); bookFile=e.dataTransfer.files[0]; updateBookUI(); rbBooks=[]; document.getElementById('rb-picker').style.display='none'; }
+function onBookSel(e){ bookFile=e.target.files[0]; updateBookUI(); rbBooks=[]; document.getElementById('rb-picker').style.display='none'; }
+function updateBookUI(){ if(!bookFile) return; document.getElementById('book-dz').classList.add('has'); document.getElementById('book-dz-txt').innerHTML=`✅ <b>${bookFile.name}</b><br/><small>${fmtSize(bookFile.size)}</small>`; }
+
+function onRoboosk(e){
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      if(!data.library?.length){ toast('Нет книг в backup.json','bad'); return; }
+      rbBooks=data.library.filter(b=>b.title);
+      const picker=document.getElementById('rb-picker'), list=document.getElementById('rb-list');
+      list.innerHTML=rbBooks.map((b,i)=>`
+        <div style="display:flex;align-items:center;gap:.6rem;padding:.45rem 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="selectRbBook(${i})">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:.85rem;font-weight:600">${esc(b.title||'Без названия')}</div>
+            <div style="font-size:.7rem;color:var(--text2);font-style:italic">${esc(b.author||'')}</div>
+          </div>
+          <button class="btn btn-sm btn-out">Выбрать</button>
+        </div>`).join('');
+      picker.style.display='block';
+      bookFile=null;
+      document.getElementById('book-dz').classList.remove('has');
+      document.getElementById('book-dz-txt').innerHTML='<div class="dz-icon">📖</div><b>Перетащите или нажмите</b><br/><small style="opacity:.6">Или выберите из списка ниже</small>';
+    } catch{ toast('Неверный файл backup.json','bad'); }
+  };
+  reader.readAsText(file);
+}
+function selectRbBook(i){
+  const b=rbBooks[i]; if(!b) return;
+  document.getElementById('u-title').value=b.title||'';
+  document.getElementById('u-author').value=b.author||'';
+  document.getElementById('u-desc').value=b.description||'';
+  // Convert rawText to blob as .txt
+  const text=(b.chapters||[]).map(c=>(c.title?c.title+'\n\n':'')+c.content).join('\n\n---\n\n')||(b.rawText||'');
+  const blob=new Blob([text],{type:'text/plain'});
+  bookFile=new File([blob], (b.title||'book').replace(/[^\w\u0400-\u04FF]/g,'_')+'.txt', {type:'text/plain'});
+  // Cover
+  if(b.cover&&b.cover.startsWith('data:')){
+    fetch(b.cover).then(r=>r.blob()).then(bl=>{ covFile=new File([bl],'cover.jpg',{type:'image/jpeg'}); updateCovUI(); });
+  }
+  updateBookUI();
+  document.getElementById('rb-picker').style.display='none';
+  toast('Книга выбрана: '+b.title);
+}
+
+async function doUpload(){
+  if(!curUser){ nav('login'); return; }
+  const errEl=document.getElementById('u-err'), okEl=document.getElementById('u-ok');
+  errEl.style.display='none'; okEl.style.display='none';
+  const title=document.getElementById('u-title').value.trim();
+  const author=document.getElementById('u-author').value.trim();
+  const desc=document.getElementById('u-desc').value.trim();
+  const genre=document.getElementById('u-genre').value;
+  if(!title||!author){ errEl.textContent='Название и автор обязательны'; errEl.style.display='block'; return; }
+  if(!bookFile){ errEl.textContent='Выберите файл книги'; errEl.style.display='block'; return; }
+  setLoading(true);
+  try{
+    const ts=Date.now();
+    let cover_url=null;
+    if(covFile){
+      const cp=`${curUser.id}/${ts}_${covFile.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+      const {error:ce}=await sb.storage.from('covers').upload(cp,covFile);
+      if(ce) throw new Error('Обложка: '+ce.message);
+      cover_url=sb.storage.from('covers').getPublicUrl(cp).data.publicUrl;
+    }
+    const bp=`${curUser.id}/${ts}_${bookFile.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+    const {error:be}=await sb.storage.from('books').upload(bp,bookFile);
+    if(be) throw new Error('Файл: '+be.message);
+    const file_url=sb.storage.from('books').getPublicUrl(bp).data.publicUrl;
+    const {error:de}=await sb.from('books').insert({title,author,description:desc||null,genre:genre||null,cover_url,file_url,file_name:bookFile.name,file_size:bookFile.size,uploaded_by:curUser.id});
+    if(de) throw new Error('БД: '+de.message);
+    okEl.textContent='✅ Книга опубликована!'; okEl.style.display='block';
+    ['u-title','u-author','u-desc'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('u-genre').value='';
+    covFile=null; bookFile=null;
+    ['cov-dz','book-dz'].forEach(id=>{ document.getElementById(id).classList.remove('has'); });
+    document.getElementById('cov-dz-txt').innerHTML='<div class="dz-icon">🖼</div><b>Перетащите или нажмите</b><br/><small style="opacity:.6">JPG, PNG, WEBP (необязательно)</small>';
+    document.getElementById('book-dz-txt').innerHTML='<div class="dz-icon">📖</div><b>Перетащите или нажмите</b><br/><small style="opacity:.6">EPUB, FB2, RTF, PDF, TXT и другие форматы</small>';
+    await loadBooks(); toast('Книга опубликована! 🎉');
+  } catch(ex){ errEl.textContent='Ошибка: '+ex.message; errEl.style.display='block'; }
+  setLoading(false);
+}
+
+// ── AUTH ──
+async function doLogin(){
+  const email=document.getElementById('l-email').value.trim(), pass=document.getElementById('l-pass').value;
+  const errEl=document.getElementById('l-err'); errEl.style.display='none';
+  if(!email||!pass){ errEl.textContent='Заполните все поля'; errEl.style.display='block'; return; }
+  setLoading(true);
+  const {error}=await sb.auth.signInWithPassword({email,password:pass});
+  setLoading(false);
+  if(error){ errEl.textContent='Ошибка: '+error.message; errEl.style.display='block'; return; }
+  toast('Добро пожаловать!'); nav('home');
+}
+async function doRegister(){
+  const name=document.getElementById('r-name').value.trim(), email=document.getElementById('r-email').value.trim(), pass=document.getElementById('r-pass').value;
+  const errEl=document.getElementById('r-err'), okEl=document.getElementById('r-ok');
+  errEl.style.display='none'; okEl.style.display='none';
+  if(!name||!email||!pass){ errEl.textContent='Заполните все поля'; errEl.style.display='block'; return; }
+  if(pass.length<6){ errEl.textContent='Пароль минимум 6 символов'; errEl.style.display='block'; return; }
+  setLoading(true);
+  const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{username:name}}});
+  setLoading(false);
+  if(error){ errEl.textContent='Ошибка: '+error.message; errEl.style.display='block'; return; }
+  if(data?.session){ toast('Добро пожаловать, '+name+'! 🎉'); nav('home'); }
+  else { okEl.innerHTML='✅ Почти готово! Зайди в <b>Supabase → Auth → Providers → Email</b> и выключи <b>"Confirm email"</b>, затем зарегистрируйся снова.'; okEl.style.display='block'; }
+}
+async function doLogout(){
+  await sb.auth.signOut(); curUser=null; curProfile=null;
+  renderTopbar(); nav('home'); toast('Вы вышли из аккаунта');
+}
+
+// ── SEARCH ──
+let searchFilter = 'all';
+let searchTimer = null;
+
+function setSearchFilter(btn, f){
+  searchFilter = f;
+  document.querySelectorAll('#search-filters .genre-pill').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  doSearch();
+}
+
+function doSearch(){
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(_doSearch, 260);
+}
+
+async function _doSearch(){
+  const q = document.getElementById('search-big-inp').value.trim().toLowerCase();
+  const res = document.getElementById('search-results');
+  if(q.length < 2){
+    res.innerHTML='<div class="sr-empty">Введите минимум 2 символа...</div>';
+    return;
+  }
+  res.innerHTML='<div class="sr-empty"><div class="spinner" style="width:24px;height:24px;margin:0 auto"></div></div>';
+
+  let booksHTML = '', usersHTML = '';
+
+  // Search books
+  if(searchFilter === 'all' || searchFilter === 'books'){
+    const {data:books} = await sb.from('books').select('id,title,author,genre,cover_url')
+      .or(`title.ilike.%${q}%,author.ilike.%${q}%,description.ilike.%${q}%,genre.ilike.%${q}%`)
+      .limit(12);
+    if(books?.length){
+      booksHTML = `<div class="sr-section">
+        <div class="sr-section-hd">Книги <span style="font-family:inherit;font-size:.8rem;font-weight:400;color:var(--text3)">(${books.length})</span></div>
+        ${books.map(b=>{
+          const cov = b.cover_url ? `<img src="${esc(b.cover_url)}" alt=""/>` : '📖';
+          return `<div class="sr-book" onclick="openBook('${b.id}')">
+            <div class="sr-book-cov">${b.cover_url?`<img src="${esc(b.cover_url)}" alt=""/>`:''} ${b.cover_url?'':'📖'}</div>
+            <div>
+              <div class="sr-book-title">${esc(b.title)}</div>
+              <div class="sr-book-author">${esc(b.author)}</div>
+              ${b.genre?`<span class="sr-book-genre">${esc(b.genre)}</span>`:''}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`;
+    } else if(searchFilter === 'books'){
+      booksHTML = '<div class="sr-empty">Книги не найдены</div>';
+    }
+  }
+
+  // Search users
+  if(searchFilter === 'all' || searchFilter === 'users'){
+    const {data:users} = await sb.from('profiles').select('id,username,bio,avatar_url')
+      .or(`username.ilike.%${q}%,bio.ilike.%${q}%`)
+      .limit(8);
+    if(users?.length){
+      usersHTML = `<div class="sr-section">
+        <div class="sr-section-hd">👤 Пользователи <span style="font-family:inherit;font-size:.8rem;font-weight:400;color:var(--text3)">(${users.length})</span></div>
+        ${users.map(u=>{
+          const av = u.avatar_url
+            ? `<img src="${esc(u.avatar_url)}" alt=""/>`
+            : (u.username||'?')[0].toUpperCase();
+          return `<div class="sr-user" onclick="openUserProfile('${esc(u.id)}')" style="cursor:pointer">
+            <div class="sr-user-av">${av}</div>
+            <div>
+              <div class="sr-user-name">${esc(u.username)}</div>
+              ${u.bio?`<div class="sr-user-bio">${esc(u.bio.slice(0,80))}${u.bio.length>80?'...':''}</div>`:''}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`;
+    } else if(searchFilter === 'users'){
+      usersHTML = '<div class="sr-empty">Пользователи не найдены</div>';
+    }
+  }
+
+  const total = booksHTML + usersHTML;
+  res.innerHTML = total || '<div class="sr-empty">Ничего не найдено по запросу «' + esc(q) + '»</div>';
+}
+
+// ── USER PROFILE VIEW ──
+async function openUserProfile(userId){
+  nav('user-profile');
+  const el = document.getElementById('upr-content');
+  el.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text3)">Загрузка...</div>';
+  const requests = [
+    sb.from('profiles').select('*').eq('id',userId).single(),
+    sb.from('books').select('id,title,author,cover_url,downloads,created_at').eq('uploaded_by',userId).order('created_at',{ascending:false}),
+    sb.from('follows').select('id',{count:'exact',head:true}).eq('following_id',userId),
+    sb.from('follows').select('id',{count:'exact',head:true}).eq('follower_id',userId)
+  ];
+  if(curUser) requests.push(sb.from('follows').select('id').eq('follower_id',curUser.id).eq('following_id',userId).maybeSingle());
+  const results = await Promise.all(requests);
+  const profile = results[0].data;
+  const books = results[1].data;
+  const followersCount = results[2].data?.length ?? 0;
+  const followingCount = results[3].data?.length ?? 0;
+  const isFollowing = curUser ? !!results[4]?.data : false;
+  if(!profile){ el.innerHTML='<div style="text-align:center;padding:3rem;color:var(--text3)">Пользователь не найден</div>'; return; }
+  const isOwnProfile = curUser?.id === userId;
+  const name = profile.username || 'Читатель';
+  const av = profile.avatar_url
+    ? `<img src="${esc(profile.avatar_url)}" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover"/>`
+    : `<div style="width:80px;height:80px;border-radius:50%;background:var(--accentDim);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:var(--accent)">${name[0].toUpperCase()}</div>`;
+  const followBtn = (!isOwnProfile && curUser)
+    ? `<button id="follow-btn" onclick="toggleFollow('${userId}')" class="btn btn-sm ${isFollowing?'btn-prim':'btn-out'}" style="margin-top:.6rem">${isFollowing?'✓ Подписан':'+ Подписаться'}</button>`
+    : '';
+  const booksHTML = books?.length
+    ? books.map(b=>{
+        const cov = b.cover_url
+          ? `<img src="${esc(b.cover_url)}" alt="" style="width:36px;height:52px;object-fit:cover;border-radius:4px;flex-shrink:0"/>`
+          : `<div style="width:36px;height:52px;background:var(--bg3);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">📖</div>`;
+        return `<div style="display:flex;align-items:center;gap:.7rem;padding:.5rem 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="openBook('${b.id}')">
+          ${cov}
+          <div style="flex:1;min-width:0">
+            <div style="font-size:.85rem;font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${esc(b.title)}</div>
+            <div style="font-size:.72rem;color:var(--text2);font-style:italic">${esc(b.author||'')} · ↓${b.downloads||0}</div>
+          </div>
+        </div>`;
+      }).join('')
+    : '<div style="color:var(--text3);font-style:italic;font-size:.84rem">Нет загруженных книг</div>';
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:1.2rem;margin-bottom:1.5rem">
+      ${av}
+      <div>
+        <div style="font-size:1.4rem;font-weight:800;font-family:'Playfair Display',serif">${esc(name)}</div>
+        ${profile.is_admin?'<div style="font-size:.72rem;background:var(--accentDim);color:var(--accent);border-radius:10px;padding:.15rem .55rem;display:inline-block;margin-top:.2rem;font-weight:700">⭐ Администратор</div>':''}
+        ${profile.bio?`<div style="font-size:.85rem;color:var(--text2);margin-top:.35rem;line-height:1.5">${esc(profile.bio)}</div>`:''}
+        <div style="font-size:.8rem;color:var(--text2);margin-top:.35rem">
+          <strong style="color:var(--text)">${followersCount}</strong> подписчиков &nbsp;·&nbsp;
+          <strong style="color:var(--text)">${followingCount}</strong> подписок
+        </div>
+        ${followBtn}
+      </div>
+    </div>
+    <div style="font-size:.92rem;font-weight:700;margin-bottom:.75rem;color:var(--accent)">Загруженные книги (${books?.length||0})</div>
+    <div>${booksHTML}</div>`;
+}
+
+// ── BOOK PREVIEW ──
+async function openPreview(fileUrl, fileName, title){
+  document.getElementById('preview-title').textContent = '👁 ' + (title||fileName||'Предпросмотр');
+  document.getElementById('preview-body').textContent = 'Загрузка...';
+  openM('m-preview');
+  try {
+    const resp = await fetch(fileUrl, {mode:'cors'});
+    if(!resp.ok) throw new Error('Ошибка сети');
+    const buf = await resp.arrayBuffer();
+    const ext = (fileName||'').split('.').pop().toLowerCase();
+    let text = '';
+    if(ext === 'txt') {
+      try { text = new TextDecoder('utf-8',{fatal:true}).decode(buf); }
+      catch { text = new TextDecoder('windows-1251').decode(buf); }
+    } else if(ext === 'rtf') {
+      let s; try{s=new TextDecoder('utf-8',{fatal:true}).decode(buf);}catch{s=new TextDecoder('windows-1251').decode(buf);}
+      text = decodeRtfSimple(s);
+    } else if(ext === 'fb2') {
+      const s = new TextDecoder('utf-8',{fatal:false}).decode(buf);
+      text = extractFb2Text(s);
+    } else if(ext === 'epub') {
+      text = await extractEpubText(buf);
+    } else {
+      try { text = new TextDecoder('utf-8',{fatal:true}).decode(buf); }
+      catch { text = new TextDecoder('windows-1251').decode(buf); }
+    }
+    // Limit to ~1 page (~2500 chars)
+    const preview = text.trim().slice(0, 2500);
+    document.getElementById('preview-body').textContent = preview + (text.length > 2500 ? '\n\n...' : '');
+  } catch(e) {
+    document.getElementById('preview-body').textContent = 'Не удалось загрузить предпросмотр: ' + e.message;
+  }
+}
+
+function decodeRtfSimple(s){
+  if(!s.startsWith('{\\rtf')) return s;
+  // Remove font/color tables and special groups
+  s = s.replace(/\{\\(?:fonttbl|colortbl|stylesheet|info|pict|object)[\s\S]*?\}/g, '');
+  s = s.replace(/\{\\[*][^}]*\}/g, '');
+  // Windows-1251 hex escapes
+  const W1251 = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,1026,1027,8218,1107,8222,8230,8224,8225,8364,8240,1033,8249,1034,1036,1035,1039,1106,8216,8217,8220,8221,8226,8211,8212,0,8482,1057,8250,1058,1060,1061,1063,160,1038,1118,1032,164,1168,166,167,1025,169,1054,171,172,173,174,1030,176,177,1030,1110,1169,181,182,183,1105,8470,1072,187,1028,1029,1031,1111,1040,1041,1042,1043,1044,1045,1046,1047,1048,1049,1050,1051,1052,1053,1054,1055,1056,1057,1058,1059,1060,1061,1062,1063,1064,1065,1066,1067,1068,1069,1070,1071,1072,1073,1074,1075,1076,1077,1078,1079,1080,1081,1082,1083,1084,1085,1086,1087,1088,1089,1090,1091,1092,1093,1094,1095,1096,1097,1098,1099,1100,1101,1102,1103];
+  s = s.replace(/\\'([0-9a-fA-F]{2})/g, (_,h)=>{const c=parseInt(h,16);return String.fromCharCode(c>=128&&c<=255?W1251[c]||c:c);});
+  s = s.replace(/\\u(-?\d+)\??/g, (_,n)=>String.fromCharCode(parseInt(n)));
+  s = s.replace(/\\par\b/g,'\n').replace(/\\line\b/g,'\n').replace(/\\tab\b/g,'\t');
+  s = s.replace(/\\[a-zA-Z]+-?\d*\s?/g,'').replace(/[{}\\]/g,'');
+  return s.replace(/\n{3,}/g,'\n\n').trim();
+}
+
+function extractFb2Text(xml){
+  // Get body sections text
+  const body = xml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+  if(!body) return xml.replace(/<[^>]+>/g,'').trim();
+  let text = body[1]
+    .replace(/<title[^>]*>([\s\S]*?)<\/title>/gi, (_, t) => '\n\n' + t.replace(/<[^>]+>/g,'').trim() + '\n')
+    .replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_, t) => t.replace(/<[^>]+>/g,'').trim() + '\n')
+    .replace(/<[^>]+>/g,' ')
+    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'")
+    .replace(/\n{3,}/g,'\n\n').trim();
+  return text;
+}
+
+async function extractEpubText(buf){
+  // Minimal EPUB text extraction via ZIP
+  try {
+    const {ZipReader, BlobReader, TextWriter} = await import('https://cdn.jsdelivr.net/npm/@zip.js/zip.js@2.7.52/+esm').catch(()=>({}));
+    if(!ZipReader) throw new Error('ZIP lib unavailable');
+    const reader = new ZipReader(new BlobReader(new Blob([buf])));
+    const entries = await reader.getEntries();
+    // Find first content xhtml/html file
+    const content = entries.find(e => /\.(xhtml|html|htm)$/i.test(e.filename) && !/toc|nav/i.test(e.filename));
+    if(!content) throw new Error('no content');
+    const text = await content.getData(new TextWriter());
+    await reader.close();
+    return text.replace(/<[^>]+>/g,' ').replace(/\s{2,}/g,' ').trim();
+  } catch {
+    return '[EPUB: предпросмотр недоступен — откройте книгу в RoBoosk]';
+  }
+}
+
+
+let editCovFile = null;
+let editBookFile = null;
+
+function onEditCov(e){
+  editCovFile = e.target.files[0];
+  if(editCovFile) document.getElementById('edit-cov-txt').textContent = '✅ ' + editCovFile.name;
+}
+function onEditFile(e){
+  editBookFile = e.target.files[0];
+  if(editBookFile) document.getElementById('edit-file-txt').textContent = '✅ ' + editBookFile.name + ' (' + fmtSize(editBookFile.size) + ')';
+}
+
+async function openEditBook(bookId){
+  const {data:book} = await sb.from('books').select('*').eq('id', bookId).single();
+  if(!book) return;
+  document.getElementById('edit-book-id').value = book.id;
+  document.getElementById('edit-title').value = book.title;
+  document.getElementById('edit-author').value = book.author;
+  document.getElementById('edit-desc').value = book.description || '';
+  document.getElementById('edit-genre').value = book.genre || '';
+  document.getElementById('edit-err').style.display = 'none';
+  document.getElementById('edit-ok').style.display = 'none';
+  document.getElementById('edit-cov-txt').textContent = book.cover_url ? '🖼 Текущая обложка сохранится' : '🖼 Нажмите чтобы выбрать новую обложку';
+  document.getElementById('edit-file-txt').textContent = book.file_name ? `📄 Текущий файл: ${book.file_name}` : '📄 Нажмите чтобы выбрать новый файл';
+  editCovFile = null;
+  editBookFile = null;
+  openM('m-edit');
+}
+
+async function saveEditBook(){
+  const errEl = document.getElementById('edit-err'), okEl = document.getElementById('edit-ok');
+  errEl.style.display='none'; okEl.style.display='none';
+  const id = document.getElementById('edit-book-id').value;
+  const title = document.getElementById('edit-title').value.trim();
+  const author = document.getElementById('edit-author').value.trim();
+  const desc = document.getElementById('edit-desc').value.trim();
+  const genre = document.getElementById('edit-genre').value;
+  if(!title||!author){ errEl.textContent='Название и автор обязательны'; errEl.style.display='block'; return; }
+  setLoading(true);
+  try {
+    let updates = {title, author, description:desc||null, genre:genre||null};
+    if(editCovFile){
+      const cp = `${curUser.id}/${Date.now()}_${editCovFile.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+      const {error:ce} = await sb.storage.from('covers').upload(cp, editCovFile);
+      if(ce) throw new Error('Обложка: '+ce.message);
+      updates.cover_url = sb.storage.from('covers').getPublicUrl(cp).data.publicUrl;
+    }
+    if(editBookFile){
+      const fp = `${curUser.id}/${Date.now()}_${editBookFile.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+      const {error:fe} = await sb.storage.from('books').upload(fp, editBookFile);
+      if(fe) throw new Error('Файл: '+fe.message);
+      updates.file_url = sb.storage.from('books').getPublicUrl(fp).data.publicUrl;
+      updates.file_name = editBookFile.name;
+      updates.file_size = editBookFile.size;
+    }
+    const {error} = await sb.from('books').update(updates).eq('id', id);
+    if(error) throw new Error(error.message);
+    okEl.textContent='✅ Книга обновлена!'; okEl.style.display='block';
+    editCovFile = null;
+    editBookFile = null;
+    await loadBooks();
+    // Refresh detail if open
+    if(document.getElementById('page-detail')?.classList.contains('show')) openBook(id);
+    if(document.getElementById('page-profile')?.classList.contains('show')) loadProfilePage();
+    toast('Книга обновлена!');
+    setTimeout(()=>closeM('m-edit'), 1200);
+  } catch(ex){ errEl.textContent='Ошибка: '+ex.message; errEl.style.display='block'; }
+  setLoading(false);
+}
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtSize(b){ if(!b) return ''; if(b<1024) return b+'B'; if(b<1048576) return (b/1024).toFixed(0)+'KB'; return (b/1048576).toFixed(1)+'MB'; }
+function setLoading(v){ document.getElementById('lov').classList.toggle('show',v); }
+let _tt;
+function toast(msg,type='ok'){
+  const el=document.getElementById('toast');
+  el.textContent=(type==='ok'?'✓ ':'✗ ')+msg;
+  el.className='toast show '+type;
+  clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+// ── PWA: register service worker ──
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+
+
+// ── FAQ ──
+function toggleFaq(el){ el.parentElement.classList.toggle('open'); }
+
+// ── SUPPORT ──
+// ── FAQ ──
+function toggleFaq(el){ el.parentElement.classList.toggle('open'); }
+
+async function submitSupport(){
+  const errEl=document.getElementById('sup-err');
+  const okEl=document.getElementById('sup-ok');
+  errEl.style.display='none'; okEl.style.display='none';
+  const type=document.getElementById('sup-type').value;
+  const msg=document.getElementById('sup-msg').value.trim();
+  const email=document.getElementById('sup-email')?.value.trim()||null;
+  if(!msg){ errEl.textContent='Напишите сообщение'; errEl.style.display='block'; return; }
+  if(msg.length<10){ errEl.textContent='Сообщение слишком короткое'; errEl.style.display='block'; return; }
+  setLoading(true);
+  const {error}=await sb.from('support_messages').insert({
+    type, message:msg, email:email||null,
+    user_id: curUser?.id||null,
+    username: curProfile?.username||null
+  });
+  setLoading(false);
+  if(error){ errEl.textContent='Ошибка: '+error.message; errEl.style.display='block'; return; }
+  document.getElementById('sup-msg').value='';
+  okEl.textContent='Сообщение отправлено! Спасибо за обратную связь.';
+  okEl.style.display='block';
+  toast('Сообщение отправлено!');
+}
+
+// ── FOLLOWS ──
+async function toggleFollow(authorId){
+  if(!curUser){ nav('login'); return; }
+  const btn=document.getElementById('follow-btn');
+  const {data:existing}=await sb.from('follows').select('id').eq('follower_id',curUser.id).eq('following_id',authorId).maybeSingle();
+  if(existing){
+    await sb.from('follows').delete().eq('follower_id',curUser.id).eq('following_id',authorId);
+    if(btn){ btn.textContent='+ Подписаться'; btn.classList.remove('btn-prim'); btn.classList.add('btn-out'); }
+    toast('Вы отписались');
+  } else {
+    await sb.from('follows').insert({follower_id:curUser.id, following_id:authorId});
+    if(btn){ btn.textContent='✓ Подписан'; btn.classList.add('btn-prim'); btn.classList.remove('btn-out'); }
+    toast('Вы подписались!');
+  }
+}
+
+// ── TTS ──
+let ttsActive=false, ttsWords=[], ttsIdx=0, ttsUtter=null;
+
+function startTTS(text){
+  if(!('speechSynthesis' in window)){ toast('TTS не поддерживается браузером','bad'); return; }
+  stopTTS();
+  ttsWords=text.trim().split(/\s+/).filter(Boolean);
+  if(!ttsWords.length){ toast('Нет текста для озвучки','bad'); return; }
+  ttsIdx=0; ttsActive=true;
+  updateTTSBtn(true);
+  // Voices may not be loaded yet
+  if(window.speechSynthesis.getVoices().length===0){
+    window.speechSynthesis.onvoiceschanged=()=>{ window.speechSynthesis.onvoiceschanged=null; speakNextChunk(); };
+  } else { speakNextChunk(); }
+}
+
+function speakNextChunk(){
+  if(!ttsActive||ttsIdx>=ttsWords.length){ stopTTS(); return; }
+  const CHUNK=180;
+  const chunk=ttsWords.slice(ttsIdx,ttsIdx+CHUNK).join(' ');
+  ttsIdx+=CHUNK;
+  ttsUtter=new SpeechSynthesisUtterance(chunk);
+  ttsUtter.lang='ru-RU'; ttsUtter.rate=0.95;
+  const voices=window.speechSynthesis.getVoices();
+  const ruVoice=voices.find(v=>v.lang.startsWith('ru'));
+  if(ruVoice) ttsUtter.voice=ruVoice;
+  ttsUtter.onend=()=>{ if(ttsActive) speakNextChunk(); };
+  ttsUtter.onerror=()=>{ if(ttsActive) speakNextChunk(); };
+  window.speechSynthesis.speak(ttsUtter);
+}
+
+function stopTTS(){
+  ttsActive=false;
+  window.speechSynthesis?.cancel();
+  ttsUtter=null;
+  updateTTSBtn(false);
+}
+
+function updateTTSBtn(active){
+  const btn=document.getElementById('tts-btn');
+  if(btn) btn.textContent=active?'⏹ Стоп':'🔊 Озвучить';
+}
+
+function toggleTTS(){
+  if(ttsActive){ stopTTS(); return; }
+  const det=document.getElementById('page-detail');
+  if(!det||!det.classList.contains('show')){ toast('Откройте страницу книги','bad'); return; }
+  const desc=det.querySelector('.det-desc');
+  const titleEl=det.querySelector('.det-title');
+  const authorEl=det.querySelector('.det-author');
+  let text='';
+  if(titleEl) text+=titleEl.textContent+'. ';
+  if(authorEl) text+='Автор: '+authorEl.textContent+'. ';
+  if(desc) text+=desc.textContent;
+  if(!text.trim()){ toast('Нет описания для озвучки','bad'); return; }
+  startTTS(text);
+}
+</script>
+</body>
+</html>

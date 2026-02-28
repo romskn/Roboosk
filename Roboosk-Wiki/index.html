@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>RoBoosk Wiki — Alpha 0.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Crimson Pro',Georgia,serif}
+button,input,textarea,select{font-family:inherit;font-size:inherit}
+
+:root{
+  --bg:#0c0f0a;--bg2:#131810;--bg3:#1a2016;--bg4:#202820;
+  --border:#2a3528;--accent:#6dbe8a;--accentDim:rgba(109,190,138,.12);
+  --accentFg:#071208;--text:#e8ede4;--text2:#8aaa90;--text3:#4a6050;
+  --gold:#c8a84b;--danger:#c85858;--warn:#e8a030;
+  --shadow:0 12px 48px rgba(0,0,0,.6);--r:14px;--r2:9px;--tr:.16s ease;
+}
+
+body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── CATEGORY COLOURS ── */
+:root{
+  --cat-char:#6dbe8a;   /* Персонажи   — зелёный  */
+  --cat-loc:#38bdf8;    /* Локации     — голубой  */
+  --cat-item:#c8a84b;   /* Предметы    — золотой  */
+  --cat-event:#f472b6;  /* События     — розовый  */
+  --cat-org:#a78bfa;    /* Организации — фиолетовый */
+  --cat-custom:#e8a030; /* Свои        — оранжевый */
+}
+
+/* ── TOPBAR ── */
+.topbar{
+  position:sticky;top:0;z-index:200;
+  background:rgba(12,15,10,.92);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:.5rem;padding:.55rem 1.4rem;
+}
+.logo{
+  font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:900;
+  color:var(--accent);cursor:pointer;letter-spacing:-.02em;
+  display:flex;align-items:baseline;gap:.3rem;flex-shrink:0;
+}
+.logo-sub{font-size:.6rem;color:var(--gold);letter-spacing:.08em;border:1px solid var(--gold);border-radius:4px;padding:.05rem .28rem}
+.tb-gap{flex:1}
+.tb-btn{
+  background:transparent;border:none;color:var(--text2);cursor:pointer;
+  padding:.3rem .65rem;border-radius:20px;font-size:.8rem;font-weight:600;
+  transition:var(--tr);white-space:nowrap;
+}
+.tb-btn:hover{background:var(--bg3);color:var(--text)}
+.tb-btn.active{color:var(--accent);background:var(--accentDim)}
+.tb-prim{
+  background:var(--accent);color:var(--accentFg);
+  border:none;padding:.32rem .85rem;border-radius:20px;
+  font-size:.8rem;font-weight:700;cursor:pointer;transition:var(--tr);
+}
+.tb-prim:hover{filter:brightness(1.1)}
+.avatar-btn{
+  width:32px;height:32px;border-radius:50%;background:var(--accentDim);
+  border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;
+  font-size:.82rem;font-weight:700;color:var(--accent);cursor:pointer;overflow:hidden;
+}
+.avatar-btn img{width:100%;height:100%;object-fit:cover}
+
+/* ── PAGES ── */
+.page{display:none;min-height:calc(100vh - 52px)}
+.page.show{display:block}
+
+/* ── HOME / WIKI GRID ── */
+.wiki-wrap{max-width:1200px;margin:0 auto;padding:1.6rem 1.4rem}
+.wiki-head{display:flex;align-items:center;gap:1rem;margin-bottom:1.4rem;flex-wrap:wrap}
+.wiki-head h1{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;flex:1}
+.project-select{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);
+  color:var(--text);padding:.35rem .65rem;outline:none;font-size:.84rem;cursor:pointer;
+}
+.project-select:focus{border-color:var(--accent)}
+
+/* Фильтр категорий */
+.cat-bar{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.2rem;align-items:center}
+.cat-btn{
+  display:inline-flex;align-items:center;gap:.35rem;
+  padding:.28rem .65rem;border-radius:20px;border:1.5px solid var(--border);
+  background:transparent;color:var(--text2);font-size:.78rem;font-weight:600;
+  cursor:pointer;transition:var(--tr);
+}
+.cat-btn:hover{border-color:var(--accent);color:var(--text)}
+.cat-btn.active{color:var(--accentFg)}
+.cat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* Карточки сущностей */
+.entity-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.9rem;
+}
+.entity-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  cursor:pointer;transition:var(--tr);position:relative;overflow:hidden;
+}
+.entity-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.ec-accent-bar{height:3px;width:100%}
+.ec-body{padding:.9rem 1rem}
+.ec-cat{
+  display:inline-flex;align-items:center;gap:.3rem;
+  font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  padding:.12rem .42rem;border-radius:6px;margin-bottom:.5rem;opacity:.85;
+}
+.ec-name{
+  font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;
+  line-height:1.2;margin-bottom:.35rem;
+}
+.ec-excerpt{font-size:.8rem;color:var(--text2);line-height:1.6;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+.ec-tags{display:flex;gap:.25rem;flex-wrap:wrap;margin-top:.55rem}
+.ec-tag{
+  font-size:.62rem;background:var(--bg3);border:1px solid var(--border);
+  border-radius:4px;padding:.08rem .3rem;color:var(--text3);
+}
+.ec-img{width:100%;height:130px;object-fit:cover;display:block}
+.ec-img-ph{
+  width:100%;height:80px;display:flex;align-items:center;justify-content:center;
+  font-size:2rem;opacity:.25;background:linear-gradient(135deg,var(--bg3),var(--bg4));
+}
+.ec-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.45rem 1rem;border-top:1px solid var(--border);
+  font-size:.68rem;color:var(--text3);
+}
+.ec-acts{display:flex;gap:.2rem;opacity:0;transition:var(--tr)}
+.entity-card:hover .ec-acts{opacity:1}
+.icon-btn{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);
+  color:var(--text2);cursor:pointer;padding:.22rem .4rem;font-size:.72rem;transition:var(--tr);
+}
+.icon-btn:hover{color:var(--accent);border-color:var(--accent)}
+.icon-btn.danger:hover{color:var(--danger);border-color:var(--danger)}
+
+/* Пустой экран */
+.wiki-empty{
+  text-align:center;padding:4rem 1rem;color:var(--text3);
+}
+.wiki-empty .ei{font-size:3rem;opacity:.2;margin-bottom:.8rem}
+.wiki-empty h2{font-family:'Playfair Display',serif;color:var(--text2);font-size:1.4rem;margin-bottom:.5rem}
+
+/* ── DETAIL VIEW (страница сущности) ── */
+.detail-wrap{max-width:860px;margin:0 auto;padding:2rem 1.4rem}
+.back-btn{
+  display:inline-flex;align-items:center;gap:.4rem;
+  background:transparent;border:none;color:var(--text3);cursor:pointer;
+  font-size:.84rem;margin-bottom:1.4rem;padding:.2rem 0;transition:var(--tr);
+}
+.back-btn:hover{color:var(--accent)}
+.detail-hero{display:flex;gap:2rem;margin-bottom:2rem;flex-wrap:wrap}
+.detail-img-wrap{
+  width:180px;min-width:180px;aspect-ratio:3/4;border-radius:var(--r);
+  overflow:hidden;border:1px solid var(--border);flex-shrink:0;
+  background:var(--bg3);display:flex;align-items:center;justify-content:center;
+  font-size:3rem;opacity:.3;cursor:pointer;position:relative;
+}
+.detail-img-wrap img{width:100%;height:100%;object-fit:cover;opacity:1}
+.detail-img-ov{
+  position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;
+  display:flex;align-items:center;justify-content:center;font-size:.8rem;
+  color:#fff;transition:var(--tr);border-radius:var(--r);
+}
+.detail-img-wrap:hover .detail-img-ov{opacity:1}
+.detail-meta{flex:1;min-width:0}
+.detail-cat-badge{
+  display:inline-flex;align-items:center;gap:.35rem;
+  font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:.18rem .55rem;border-radius:8px;margin-bottom:.65rem;
+}
+.detail-name{
+  font-family:'Playfair Display',serif;font-size:clamp(1.6rem,4vw,2.4rem);
+  font-weight:900;line-height:1.05;margin-bottom:.7rem;
+}
+.detail-fields{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.8rem}
+.detail-field{display:flex;gap:.5rem;font-size:.87rem}
+.df-label{color:var(--text3);font-weight:600;min-width:90px;flex-shrink:0;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;padding-top:.1rem}
+.df-val{color:var(--text2);line-height:1.55}
+.detail-tags{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.6rem}
+.detail-tag{
+  font-size:.72rem;background:var(--bg3);border:1px solid var(--border);
+  border-radius:6px;padding:.12rem .45rem;color:var(--text3);
+}
+.detail-actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}
+.detail-desc{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:1.4rem 1.6rem;margin-bottom:1.4rem;line-height:1.9;font-size:.95rem;color:var(--text2);
+  font-style:italic;white-space:pre-wrap;
+}
+.detail-section{margin-bottom:1.4rem}
+.detail-section h3{
+  font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;
+  margin-bottom:.7rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);
+  color:var(--accent);
+}
+.rel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.6rem}
+.rel-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);
+  padding:.6rem .8rem;cursor:pointer;transition:var(--tr);display:flex;align-items:center;gap:.55rem;
+}
+.rel-card:hover{border-color:var(--accent);background:var(--accentDim)}
+.rel-icon{font-size:1.2rem;flex-shrink:0}
+.rel-name{font-size:.82rem;font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.rel-type{font-size:.65rem;color:var(--text3)}
+
+/* ── AI PAGE ── */
+.ai-wrap{max-width:760px;margin:0 auto;padding:2rem 1.4rem}
+.ai-wrap h1{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;margin-bottom:.3rem}
+.ai-wrap>p{color:var(--text2);font-style:italic;margin-bottom:1.6rem;font-size:.92rem}
+.ai-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;margin-bottom:1rem}
+.ai-card h2{font-size:1rem;font-weight:700;margin-bottom:.75rem;color:var(--accent)}
+.ai-textarea{
+  width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);
+  color:var(--text);padding:.7rem .9rem;outline:none;resize:vertical;
+  min-height:180px;line-height:1.7;font-size:.9rem;transition:border-color .15s;
+}
+.ai-textarea:focus{border-color:var(--accent)}
+.ai-textarea::placeholder{color:var(--text3)}
+.ai-opts{display:flex;gap:.6rem;flex-wrap:wrap;margin:.8rem 0}
+.ai-opt{
+  display:flex;align-items:center;gap:.35rem;padding:.3rem .65rem;
+  border:1.5px solid var(--border);border-radius:20px;cursor:pointer;
+  font-size:.78rem;font-weight:600;transition:var(--tr);color:var(--text2);
+}
+.ai-opt.sel{border-color:var(--accent);color:var(--accent);background:var(--accentDim)}
+.ai-opt input{display:none}
+.ai-result{margin-top:1rem}
+.ai-result-card{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);
+  padding:.8rem 1rem;margin-bottom:.55rem;display:flex;align-items:flex-start;gap:.8rem;
+}
+.ai-rc-check{margin-top:.1rem;width:18px;height:18px;border-radius:4px;border:2px solid var(--accent);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;transition:var(--tr)}
+.ai-rc-check.checked{background:var(--accent);color:var(--accentFg)}
+.ai-rc-body{flex:1;min-width:0}
+.ai-rc-name{font-weight:700;font-size:.9rem;margin-bottom:.2rem}
+.ai-rc-cat{font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.3rem;opacity:.8}
+.ai-rc-desc{font-size:.78rem;color:var(--text2);line-height:1.55}
+
+/* ── PROJECTS PAGE ── */
+.proj-wrap{max-width:800px;margin:0 auto;padding:2rem 1.4rem}
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.85rem;margin-top:1.2rem}
+.proj-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:1.1rem 1.2rem;cursor:pointer;transition:var(--tr);position:relative;
+}
+.proj-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.proj-card.active-proj{border-color:var(--accent);background:var(--accentDim)}
+.proj-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:.3rem}
+.proj-desc{font-size:.8rem;color:var(--text2);font-style:italic;line-height:1.5}
+.proj-stats{font-size:.7rem;color:var(--text3);margin-top:.7rem}
+.proj-new{
+  background:transparent;border:2px dashed var(--border);border-radius:var(--r);
+  padding:1.1rem 1.2rem;cursor:pointer;transition:var(--tr);
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
+  color:var(--text3);font-size:.88rem;font-weight:600;
+}
+.proj-new:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── MODAL / FORMS ── */
+.mbd{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(6px);z-index:500;align-items:center;justify-content:center;padding:1rem}
+.mbd.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.6rem;width:100%;max-width:520px;box-shadow:var(--shadow);max-height:90vh;overflow-y:auto}
+.modal h2{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;margin-bottom:1.2rem}
+.fg{margin-bottom:.9rem}
+.fg label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:.3rem}
+.fi,.fta,.fsel{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);color:var(--text);padding:.42rem .65rem;outline:none;transition:border-color .15s}
+.fi:focus,.fta:focus,.fsel:focus{border-color:var(--accent)}
+.fta{resize:vertical;min-height:90px;line-height:1.65}
+.fsel option{background:var(--bg3)}
+.fg .hint{font-size:.72rem;color:var(--text3);margin-top:.25rem;font-style:italic}
+.tags-input-wrap{display:flex;gap:.4rem;align-items:center}
+.tags-list{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.4rem}
+.tag-chip{
+  display:inline-flex;align-items:center;gap:.25rem;
+  background:var(--bg3);border:1px solid var(--border);border-radius:6px;
+  font-size:.72rem;padding:.1rem .4rem;color:var(--text2);
+}
+.tag-chip button{background:none;border:none;color:var(--text3);cursor:pointer;padding:0;font-size:.75rem;line-height:1}
+.tag-chip button:hover{color:var(--danger)}
+.m-actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1.2rem;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:.3rem;padding:.42rem 1rem;border:none;border-radius:var(--r2);cursor:pointer;font-size:.84rem;font-weight:700;transition:var(--tr)}
+.btn-prim{background:var(--accent);color:var(--accentFg)}
+.btn-prim:hover{filter:brightness(1.1)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--bg3);color:var(--text)}
+.btn-danger{background:transparent;color:var(--danger);border:1px solid var(--danger)}
+.btn-danger:hover{background:var(--danger);color:#fff}
+.btn-out{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.btn-out:hover{background:var(--accent);color:var(--accentFg)}
+.btn-gold{background:transparent;color:var(--gold);border:1.5px solid var(--gold)}
+.btn-gold:hover{background:var(--gold);color:#1a1200}
+.err-msg{font-size:.76rem;color:var(--danger);background:rgba(200,88,88,.1);border-radius:var(--r2);padding:.35rem .55rem;margin-bottom:.65rem;display:none}
+.ok-msg{font-size:.76rem;color:var(--accent);background:var(--accentDim);border-radius:var(--r2);padding:.35rem .55rem;margin-bottom:.65rem;display:none}
+
+/* Auth */
+.auth-wrap{max-width:400px;margin:4rem auto;padding:0 1rem}
+.auth-wrap h1{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;margin-bottom:.3rem;color:var(--accent)}
+.auth-wrap p{color:var(--text3);font-style:italic;margin-bottom:1.8rem;font-size:.9rem}
+.auth-toggle{text-align:center;margin-top:1rem;font-size:.84rem;color:var(--text3)}
+.auth-toggle a{color:var(--accent);cursor:pointer}
+.auth-toggle a:hover{text-decoration:underline}
+
+/* LOV */
+.lov{position:fixed;inset:0;background:rgba(12,15,10,.75);backdrop-filter:blur(4px);z-index:800;display:none;align-items:center;justify-content:center}
+.lov.show{display:flex}
+.spinner{width:38px;height:38px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--accent);animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Toast */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg4);border:1px solid var(--border);border-radius:var(--r2);padding:.5rem 1.1rem;font-size:.82rem;font-weight:600;opacity:0;transition:all .25s;z-index:999;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:var(--accent);color:var(--accent)}
+.toast.bad{border-color:var(--danger);color:var(--danger)}
+
+/* Divider */
+.fields-rel-wrap{display:grid;grid-template-columns:1fr;gap:.6rem}
+.custom-fields-list{display:flex;flex-direction:column;gap:.45rem}
+.cf-row{display:flex;gap:.4rem;align-items:center}
+.cf-row .fi{flex:1}
+
+/* Image upload zone */
+.img-dz{
+  width:100%;padding:1.2rem;border:2px dashed var(--border);border-radius:var(--r2);
+  text-align:center;cursor:pointer;font-size:.82rem;color:var(--text3);transition:var(--tr);
+}
+.img-dz:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .entity-grid{grid-template-columns:repeat(2,1fr);gap:.55rem}
+  .detail-hero{flex-direction:column;align-items:center}
+  .detail-img-wrap{width:140px;min-width:140px}
+  .wiki-wrap,.ai-wrap,.proj-wrap,.detail-wrap{padding:1rem .9rem}
+  .topbar{padding:.5rem .9rem}
+  .cat-bar{gap:.3rem}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo" onclick="nav('wiki')">
+    RoBoosk <span style="color:var(--text2);font-weight:400;font-size:.9rem;font-family:'Crimson Pro',serif">Wiki</span>
+    <span class="logo-sub">alpha</span>
+  </div>
+  <div class="tb-gap"></div>
+  <nav style="display:flex;align-items:center;gap:.2rem" id="main-nav">
+    <button class="tb-btn active" id="nb-wiki" onclick="nav('wiki')">📚 Вики</button>
+    <button class="tb-btn" id="nb-ai" onclick="nav('ai')">✨ ИИ Сортировка</button>
+    <button class="tb-btn" id="nb-projects" onclick="nav('projects')">📁 Проекты</button>
+  </nav>
+  <div id="tb-right" style="display:flex;align-items:center;gap:.5rem;margin-left:.5rem"></div>
+</header>
+
+<!-- ══ PAGE: WIKI ══ -->
+<div class="page show" id="page-wiki">
+  <div class="wiki-wrap">
+    <div class="wiki-head">
+      <h1 id="wiki-title">Вики</h1>
+      <select class="project-select" id="proj-select" onchange="onProjChange()">
+        <option value="">— выберите проект —</option>
+      </select>
+      <button class="btn btn-prim" id="add-entity-btn" onclick="openAddEntity()" style="display:none">+ Добавить</button>
+    </div>
+    <div class="cat-bar" id="cat-bar"></div>
+    <div class="entity-grid" id="entity-grid">
+      <div class="wiki-empty" style="grid-column:1/-1">
+        <div class="ei">📖</div>
+        <h2>Выберите проект</h2>
+        <p>Создайте или откройте проект в разделе «Проекты»</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE: DETAIL ══ -->
+<div class="page" id="page-detail">
+  <div class="detail-wrap" id="detail-content">
+    <div class="spinner" style="margin:3rem auto"></div>
+  </div>
+</div>
+
+<!-- ══ PAGE: AI ══ -->
+<div class="page" id="page-ai">
+  <div class="ai-wrap">
+    <h1>✨ ИИ Автосортировка</h1>
+    <p>Вставьте фрагмент вашего текста — ИИ извлечёт персонажей, локации, предметы и другие сущности и предложит готовые карточки для вики.</p>
+
+    <div class="ai-card">
+      <h2>1. Вставьте текст</h2>
+      <textarea class="ai-textarea" id="ai-text" placeholder="Вставьте сюда свой текст, главу или описание мира...&#10;&#10;Пример: «Арагорн, сын Арантира, шёл сквозь тёмный лес Лориэн. На поясе его висел древний меч Андурил, выкованный в кузницах Минас-Тирита...»"></textarea>
+    </div>
+
+    <div class="ai-card">
+      <h2>2. Какие сущности искать?</h2>
+      <div class="ai-opts" id="ai-opts">
+        <label class="ai-opt sel"><input type="checkbox" value="char" checked onchange="toggleAiOpt(this)"><span class="cat-dot" style="background:var(--cat-char)"></span>Персонажи</label>
+        <label class="ai-opt sel"><input type="checkbox" value="loc" checked onchange="toggleAiOpt(this)"><span class="cat-dot" style="background:var(--cat-loc)"></span>Локации</label>
+        <label class="ai-opt sel"><input type="checkbox" value="item" checked onchange="toggleAiOpt(this)"><span class="cat-dot" style="background:var(--cat-item)"></span>Предметы</label>
+        <label class="ai-opt"><input type="checkbox" value="event" onchange="toggleAiOpt(this)"><span class="cat-dot" style="background:var(--cat-event)"></span>События</label>
+        <label class="ai-opt"><input type="checkbox" value="org" onchange="toggleAiOpt(this)"><span class="cat-dot" style="background:var(--cat-org)"></span>Организации</label>
+      </div>
+    </div>
+
+    <div class="ai-card">
+      <h2>3. Проект для сохранения</h2>
+      <select class="fsel" id="ai-proj-select">
+        <option value="">— выберите проект —</option>
+      </select>
+    </div>
+
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem">
+      <button class="btn btn-gold" id="ai-run-btn" onclick="runAI()" style="font-size:.9rem;padding:.55rem 1.4rem">✨ Анализировать текст</button>
+      <button class="btn btn-ghost" id="ai-save-btn" onclick="saveAIResults()" style="display:none">💾 Сохранить выбранные в вики</button>
+    </div>
+
+    <div id="ai-result-wrap" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+        <h3 style="font-family:'Playfair Display',serif;font-size:1.1rem">Найденные сущности</h3>
+        <div style="display:flex;gap:.4rem">
+          <button class="btn btn-ghost" style="font-size:.76rem;padding:.28rem .6rem" onclick="selectAllAI(true)">Выбрать все</button>
+          <button class="btn btn-ghost" style="font-size:.76rem;padding:.28rem .6rem" onclick="selectAllAI(false)">Снять все</button>
+        </div>
+      </div>
+      <div id="ai-results" class="ai-result"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE: PROJECTS ══ -->
+<div class="page" id="page-projects">
+  <div class="proj-wrap">
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:.4rem">
+      <h1 style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;flex:1">📁 Проекты</h1>
+    </div>
+    <p style="color:var(--text2);font-style:italic;font-size:.9rem;margin-bottom:1.2rem">Каждый проект — отдельный мир или книга со своей вики.</p>
+    <div class="proj-grid" id="proj-grid">
+      <button class="proj-new" onclick="openNewProject()">+ Новый проект</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE: LOGIN ══ -->
+<div class="page" id="page-login">
+  <div class="auth-wrap">
+    <h1>RoBoosk Wiki</h1>
+    <p>Войдите через аккаунт Roboosk Library</p>
+    <div class="fg"><label>Email</label><input class="fi" id="login-email" type="email" placeholder="you@email.com" autocomplete="email"/></div>
+    <div class="fg"><label>Пароль</label><input class="fi" id="login-pass" type="password" placeholder="••••••••"/></div>
+    <div class="err-msg" id="login-err"></div>
+    <button class="btn btn-prim" style="width:100%;justify-content:center;margin-bottom:.6rem" onclick="doLogin()">Войти</button>
+    <div class="auth-toggle">Нет аккаунта? <a onclick="nav('register')">Регистрация</a></div>
+  </div>
+</div>
+<div class="page" id="page-register">
+  <div class="auth-wrap">
+    <h1>Регистрация</h1>
+    <p>Создайте аккаунт — он общий с Roboosk Library</p>
+    <div class="fg"><label>Имя</label><input class="fi" id="reg-name" placeholder="Ваше имя"/></div>
+    <div class="fg"><label>Email</label><input class="fi" id="reg-email" type="email" placeholder="you@email.com"/></div>
+    <div class="fg"><label>Пароль</label><input class="fi" id="reg-pass" type="password" placeholder="минимум 6 символов"/></div>
+    <div class="err-msg" id="reg-err"></div>
+    <button class="btn btn-prim" style="width:100%;justify-content:center;margin-bottom:.6rem" onclick="doRegister()">Создать аккаунт</button>
+    <div class="auth-toggle">Уже есть аккаунт? <a onclick="nav('login')">Войти</a></div>
+  </div>
+</div>
+
+<!-- ══ MODALS ══ -->
+
+<!-- Новый/редакт. проект -->
+<div class="mbd" id="m-project">
+  <div class="modal">
+    <h2 id="m-proj-title">📁 Новый проект</h2>
+    <input type="hidden" id="proj-edit-id"/>
+    <div class="fg"><label>Название *</label><input class="fi" id="proj-name" placeholder="Название вашего мира или книги"/></div>
+    <div class="fg"><label>Описание</label><textarea class="fta" id="proj-desc" rows="2" placeholder="Краткое описание..."></textarea></div>
+    <div class="fg">
+      <label>Жанр</label>
+      <select class="fsel" id="proj-genre">
+        <option value="">— выбрать —</option>
+        <option>Фэнтези</option><option>Фантастика</option><option>Детектив</option>
+        <option>Роман</option><option>Приключения</option><option>Ужасы</option>
+        <option>Исторический</option><option>Другое</option>
+      </select>
+    </div>
+    <div class="err-msg" id="proj-err"></div>
+    <div class="m-actions">
+      <button class="btn btn-ghost" onclick="closeM('m-project')">Отмена</button>
+      <button class="btn btn-prim" onclick="saveProject()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Добавить/редакт. сущность -->
+<div class="mbd" id="m-entity">
+  <div class="modal" style="max-width:580px">
+    <h2 id="m-entity-title">+ Добавить сущность</h2>
+    <input type="hidden" id="entity-edit-id"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
+      <div class="fg" style="grid-column:1/-1">
+        <label>Название *</label>
+        <input class="fi" id="entity-name" placeholder="Имя / название"/>
+      </div>
+      <div class="fg">
+        <label>Категория *</label>
+        <select class="fsel" id="entity-cat" onchange="onCatChange()">
+          <option value="char">👤 Персонаж</option>
+          <option value="loc">📍 Локация</option>
+          <option value="item">⚔ Предмет</option>
+          <option value="event">📅 Событие</option>
+          <option value="org">🏛 Организация</option>
+          <option value="custom">✏ Своя категория</option>
+        </select>
+      </div>
+      <div class="fg" id="custom-cat-wrap" style="display:none">
+        <label>Название своей категории</label>
+        <input class="fi" id="entity-custom-cat" placeholder="Например: Артефакт, Заклинание..."/>
+      </div>
+      <div class="fg" style="grid-column:1/-1">
+        <label>Описание</label>
+        <textarea class="fta" id="entity-desc" rows="3" placeholder="Краткое описание..."></textarea>
+      </div>
+    </div>
+
+    <!-- Динамические поля по категории -->
+    <div id="entity-dyn-fields"></div>
+
+    <!-- Теги -->
+    <div class="fg">
+      <label>Теги</label>
+      <div class="tags-input-wrap">
+        <input class="fi" id="tag-input" placeholder="Введите тег и нажмите Enter" onkeydown="onTagKey(event)"/>
+        <button class="btn btn-ghost" onclick="addTag()" style="padding:.38rem .7rem">+</button>
+      </div>
+      <div class="tags-list" id="tags-list"></div>
+    </div>
+
+    <!-- Изображение -->
+    <div class="fg">
+      <label>Изображение (обложка)</label>
+      <div class="img-dz" id="entity-img-dz" onclick="document.getElementById('entity-img-fi').click()">
+        <div id="entity-img-txt">🖼 Нажмите чтобы загрузить изображение</div>
+        <img id="entity-img-prev" style="max-height:120px;border-radius:8px;margin-top:.5rem;display:none"/>
+      </div>
+      <input id="entity-img-fi" type="file" accept="image/*" style="display:none" onchange="onEntityImg(event)"/>
+    </div>
+
+    <!-- Кастомные поля -->
+    <div class="fg">
+      <label>Дополнительные поля <span style="color:var(--text3);font-weight:400">(по желанию)</span></label>
+      <div class="custom-fields-list" id="custom-fields-list"></div>
+      <button class="btn btn-ghost" style="margin-top:.4rem;font-size:.76rem;padding:.28rem .65rem" onclick="addCustomField()">+ Добавить поле</button>
+    </div>
+
+    <div class="err-msg" id="entity-err"></div>
+    <div class="m-actions">
+      <button class="btn btn-ghost" onclick="closeM('m-entity')">Отмена</button>
+      <button class="btn btn-prim" onclick="saveEntity()">💾 Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Удалить -->
+<div class="mbd" id="m-del">
+  <div class="modal" style="max-width:380px;text-align:center">
+    <div style="font-size:2rem;margin-bottom:.6rem">🗑</div>
+    <h2 style="margin-bottom:.5rem" id="m-del-title">Удалить?</h2>
+    <p style="color:var(--text2);font-size:.88rem;margin-bottom:1.2rem" id="m-del-text">Это действие нельзя отменить.</p>
+    <div class="m-actions" style="justify-content:center">
+      <button class="btn btn-ghost" onclick="closeM('m-del')">Отмена</button>
+      <button class="btn btn-danger" id="m-del-confirm">Удалить</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="lov" id="lov"><div class="spinner"></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+"use strict";
+// ══════════════════════════════════════════════════════
+//  RoBoosk Wiki — Alpha 0.1
+// ══════════════════════════════════════════════════════
+
+const SURL = 'https://emqbosamvstewjrysveh.supabase.co';
+const SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtcWJvc2FtdnN0ZXdqcnlzdmVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NzM3NTYsImV4cCI6MjA4NzI0OTc1Nn0.274Kvn0v-OKSuD5oSFTrKlUjzHDopNEuki_SqATG4YU';
+const sb = supabase.createClient(SURL, SKEY);
+
+// ── Состояние ──
+let curUser = null, curProfile = null;
+let curProject = null;
+let allProjects = [];
+let allEntities = [];
+let curFilter = 'all';
+let entityTags = [];
+let entityImgFile = null;
+let aiResults = [];
+
+// ── Конфиг категорий ──
+const CATS = {
+  char:   { label:'Персонаж',     icon:'👤', color:'var(--cat-char)',  fields:['Роль','Возраст','Раса','Происхождение','Способности'] },
+  loc:    { label:'Локация',      icon:'📍', color:'var(--cat-loc)',   fields:['Тип','Страна/Регион','Население','Климат','Особенности'] },
+  item:   { label:'Предмет',      icon:'⚔',  color:'var(--cat-item)',  fields:['Тип','Владелец','Происхождение','Свойства','Состояние'] },
+  event:  { label:'Событие',      icon:'📅', color:'var(--cat-event)', fields:['Дата/Период','Место','Участники','Причина','Последствия'] },
+  org:    { label:'Организация',  icon:'🏛', color:'var(--cat-org)',   fields:['Тип','Лидер','Цели','Участники','Территория'] },
+  custom: { label:'Своя',         icon:'✏',  color:'var(--cat-custom)',fields:[] },
+};
+
+// ── INIT ──
+sb.auth.onAuthStateChange(async (_evt, session) => {
+  if(session?.user){
+    curUser = session.user;
+    const {data} = await sb.from('profiles').select('*').eq('id',curUser.id).single();
+    curProfile = data;
+    renderTopbar();
+    await loadProjects();
+    nav('wiki');
+  } else {
+    curUser = null; curProfile = null;
+    renderTopbar();
+    nav('login');
+  }
+});
+
+// ── NAV ──
+function nav(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('show'));
+  document.getElementById('page-'+id).classList.add('show');
+  document.querySelectorAll('.tb-btn').forEach(b=>b.classList.remove('active'));
+  const nb=document.getElementById('nb-'+id);
+  if(nb) nb.classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='wiki') renderWiki();
+  if(id==='projects') renderProjects();
+  if(id==='ai') populateAIProjSelect();
+}
+
+// ── TOPBAR ──
+function renderTopbar(){
+  const r=document.getElementById('tb-right');
+  if(!curUser){
+    r.innerHTML=`<button class="tb-btn" onclick="nav('login')">Войти</button><button class="tb-prim" onclick="nav('register')">Регистрация</button>`;
+  } else {
+    const name=curProfile?.username||curUser.email.split('@')[0];
+    r.innerHTML=`<span style="font-size:.8rem;color:var(--text3)">${esc(name)}</span><button class="tb-btn" onclick="doLogout()">Выйти</button>`;
+  }
+}
+
+// ── AUTH ──
+async function doLogin(){
+  const e=document.getElementById('login-email').value.trim();
+  const p=document.getElementById('login-pass').value;
+  const err=document.getElementById('login-err');
+  err.style.display='none';
+  if(!e||!p){err.textContent='Заполните все поля';err.style.display='block';return;}
+  setLoad(true);
+  const {error}=await sb.auth.signInWithPassword({email:e,password:p});
+  setLoad(false);
+  if(error){err.textContent=error.message;err.style.display='block';}
+}
+async function doRegister(){
+  const n=document.getElementById('reg-name').value.trim();
+  const e=document.getElementById('reg-email').value.trim();
+  const p=document.getElementById('reg-pass').value;
+  const err=document.getElementById('reg-err');
+  err.style.display='none';
+  if(!n||!e||!p){err.textContent='Заполните все поля';err.style.display='block';return;}
+  if(p.length<6){err.textContent='Пароль минимум 6 символов';err.style.display='block';return;}
+  setLoad(true);
+  const {data,error}=await sb.auth.signUp({email:e,password:p,options:{data:{username:n}}});
+  if(error){err.textContent=error.message;err.style.display='block';setLoad(false);return;}
+  if(data?.user) await sb.from('profiles').upsert({id:data.user.id,username:n},{onConflict:'id'});
+  setLoad(false);
+  toast('Добро пожаловать, '+n+'! 🎉');
+}
+async function doLogout(){
+  await sb.auth.signOut();
+  curProject=null; allProjects=[]; allEntities=[];
+}
+
+// ── PROJECTS ──
+async function loadProjects(){
+  if(!curUser) return;
+  const {data}=await sb.from('wiki_projects').select('*').eq('user_id',curUser.id).order('created_at',{ascending:false});
+  allProjects=data||[];
+  populateProjSelect();
+  populateAIProjSelect();
+  renderProjects();
+  // Автовыбор первого проекта
+  if(allProjects.length && !curProject){
+    curProject=allProjects[0];
+    document.getElementById('proj-select').value=curProject.id;
+    await loadEntities(curProject.id);
+  }
+}
+
+function populateProjSelect(){
+  const sel=document.getElementById('proj-select');
+  sel.innerHTML='<option value="">— выберите проект —</option>'+
+    allProjects.map(p=>`<option value="${p.id}"${curProject?.id===p.id?' selected':''}>${esc(p.name)}</option>`).join('');
+}
+function populateAIProjSelect(){
+  const sel=document.getElementById('ai-proj-select');
+  if(!sel) return;
+  sel.innerHTML='<option value="">— выберите проект —</option>'+
+    allProjects.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+  if(curProject) sel.value=curProject.id;
+}
+
+async function onProjChange(){
+  const id=document.getElementById('proj-select').value;
+  if(!id){curProject=null;renderWiki();return;}
+  curProject=allProjects.find(p=>p.id===id)||null;
+  if(curProject) await loadEntities(curProject.id);
+  renderWiki();
+}
+
+function renderProjects(){
+  const grid=document.getElementById('proj-grid');
+  let html=`<button class="proj-new" onclick="openNewProject()">+ Новый проект</button>`;
+  html+=allProjects.map(p=>`
+    <div class="proj-card${curProject?.id===p.id?' active-proj':''}" onclick="selectProject('${p.id}')">
+      <div class="proj-name">${esc(p.name)}</div>
+      <div class="proj-desc">${esc(p.description||'')}</div>
+      <div class="proj-stats">${p.genre||''}</div>
+      <div style="position:absolute;top:.65rem;right:.65rem;display:flex;gap:.25rem">
+        <button class="icon-btn" onclick="event.stopPropagation();openEditProject('${p.id}')">✏</button>
+        <button class="icon-btn danger" onclick="event.stopPropagation();askDelProject('${p.id}','${esc(p.name)}')">🗑</button>
+      </div>
+    </div>`).join('');
+  grid.innerHTML=html;
+}
+
+async function selectProject(id){
+  curProject=allProjects.find(p=>p.id===id)||null;
+  populateProjSelect();
+  if(curProject){
+    await loadEntities(id);
+    nav('wiki');
+  }
+}
+
+function openNewProject(){
+  document.getElementById('proj-edit-id').value='';
+  document.getElementById('m-proj-title').textContent='📁 Новый проект';
+  document.getElementById('proj-name').value='';
+  document.getElementById('proj-desc').value='';
+  document.getElementById('proj-genre').value='';
+  document.getElementById('proj-err').style.display='none';
+  openM('m-project');
+}
+function openEditProject(id){
+  const p=allProjects.find(x=>x.id===id); if(!p) return;
+  document.getElementById('proj-edit-id').value=id;
+  document.getElementById('m-proj-title').textContent='✏ Редактировать проект';
+  document.getElementById('proj-name').value=p.name;
+  document.getElementById('proj-desc').value=p.description||'';
+  document.getElementById('proj-genre').value=p.genre||'';
+  document.getElementById('proj-err').style.display='none';
+  openM('m-project');
+}
+async function saveProject(){
+  const id=document.getElementById('proj-edit-id').value;
+  const name=document.getElementById('proj-name').value.trim();
+  const desc=document.getElementById('proj-desc').value.trim();
+  const genre=document.getElementById('proj-genre').value;
+  const err=document.getElementById('proj-err');
+  err.style.display='none';
+  if(!name){err.textContent='Название обязательно';err.style.display='block';return;}
+  setLoad(true);
+  if(id){
+    await sb.from('wiki_projects').update({name,description:desc||null,genre:genre||null}).eq('id',id);
+    toast('Проект обновлён!');
+  } else {
+    const {data}=await sb.from('wiki_projects').insert({user_id:curUser.id,name,description:desc||null,genre:genre||null}).select().single();
+    if(data){curProject=data;}
+    toast('Проект создан!');
+  }
+  setLoad(false);
+  closeM('m-project');
+  await loadProjects();
+  if(curProject) await loadEntities(curProject.id);
+}
+function askDelProject(id,name){
+  document.getElementById('m-del-title').textContent='Удалить «'+name+'»?';
+  document.getElementById('m-del-text').textContent='Все карточки проекта будут удалены.';
+  document.getElementById('m-del-confirm').onclick=()=>delProject(id);
+  openM('m-del');
+}
+async function delProject(id){
+  setLoad(true);
+  await sb.from('wiki_projects').delete().eq('id',id);
+  if(curProject?.id===id) curProject=null;
+  await loadProjects();
+  setLoad(false);
+  closeM('m-del');
+  toast('Проект удалён','bad');
+}
+
+// ── ENTITIES ──
+async function loadEntities(projId){
+  const {data}=await sb.from('wiki_entities').select('*').eq('project_id',projId).order('created_at',{ascending:false});
+  allEntities=data||[];
+}
+
+function renderWiki(){
+  const grid=document.getElementById('entity-grid');
+  const title=document.getElementById('wiki-title');
+  const addBtn=document.getElementById('add-entity-btn');
+
+  if(!curProject){
+    addBtn.style.display='none';
+    title.textContent='Вики';
+    buildCatBar([]);
+    grid.innerHTML=`<div class="wiki-empty" style="grid-column:1/-1">
+      <div class="ei">📖</div><h2>Выберите проект</h2>
+      <p>Создайте или откройте проект в разделе «Проекты»</p></div>`;
+    return;
+  }
+  title.textContent=curProject.name;
+  addBtn.style.display='inline-flex';
+
+  const filtered=curFilter==='all'?allEntities:allEntities.filter(e=>e.category===curFilter);
+  buildCatBar(allEntities);
+
+  if(!filtered.length){
+    grid.innerHTML=`<div class="wiki-empty" style="grid-column:1/-1">
+      <div class="ei">${curFilter==='all'?'✨':'🔍'}</div>
+      <h2>${curFilter==='all'?'Вики пуста':'Ничего не найдено'}</h2>
+      <p>${curFilter==='all'?'Добавьте первую карточку или используйте ИИ Сортировку':'Попробуйте другой фильтр'}</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML=filtered.map(e=>{
+    const cat=CATS[e.category]||{label:e.custom_category||e.category,icon:'✏',color:'var(--cat-custom)'};
+    const color=cat.color;
+    const tags=(e.tags||[]).slice(0,3).map(t=>`<span class="ec-tag">${esc(t)}</span>`).join('');
+    const img=e.image_url
+      ?`<img class="ec-img" src="${esc(e.image_url)}" alt=""/>`
+      :`<div class="ec-img-ph">${cat.icon}</div>`;
+    return `<div class="entity-card" onclick="openDetail('${e.id}')">
+      <div class="ec-accent-bar" style="background:${color}"></div>
+      ${img}
+      <div class="ec-body">
+        <div class="ec-cat" style="background:${color}22;color:${color}">${cat.icon} ${esc(cat.label==='Своя'?(e.custom_category||'Своя'):cat.label)}</div>
+        <div class="ec-name">${esc(e.name)}</div>
+        <div class="ec-excerpt">${esc(e.description||'')}</div>
+        ${tags?`<div class="ec-tags">${tags}</div>`:''}
+      </div>
+      <div class="ec-footer">
+        <span>${fmtDate(e.created_at)}</span>
+        <div class="ec-acts">
+          <button class="icon-btn" onclick="event.stopPropagation();openEditEntity('${e.id}')">✏</button>
+          <button class="icon-btn danger" onclick="event.stopPropagation();askDelEntity('${e.id}','${esc(e.name)}')">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildCatBar(entities){
+  const bar=document.getElementById('cat-bar');
+  const counts={};
+  entities.forEach(e=>{ counts[e.category]=(counts[e.category]||0)+1; });
+  let html=`<button class="cat-btn${curFilter==='all'?' active':''}" style="${curFilter==='all'?'background:var(--accent);color:var(--accentFg);border-color:var(--accent)':''}" onclick="setCatFilter('all')">Все <span style="opacity:.7">${entities.length}</span></button>`;
+  Object.entries(counts).forEach(([k,n])=>{
+    const cat=CATS[k]||{label:k,icon:'✏',color:'var(--cat-custom)'};
+    const active=curFilter===k;
+    html+=`<button class="cat-btn${active?' active':''}" style="${active?`background:${cat.color};color:var(--bg);border-color:${cat.color}`:''}" onclick="setCatFilter('${k}')">
+      <span class="cat-dot" style="background:${cat.color}"></span>${cat.icon} ${esc(cat.label)} <span style="opacity:.7">${n}</span>
+    </button>`;
+  });
+  bar.innerHTML=html;
+}
+
+function setCatFilter(cat){
+  curFilter=cat;
+  renderWiki();
+}
+
+// ── ENTITY DETAIL ──
+function openDetail(id){
+  const e=allEntities.find(x=>x.id===id); if(!e) return;
+  nav('detail');
+  const cat=CATS[e.category]||{label:e.custom_category||e.category,icon:'✏',color:'var(--cat-custom)'};
+  const color=cat.color;
+  const fields=e.extra_fields||{};
+  const dynFields=Object.entries(fields).filter(([,v])=>v).map(([k,v])=>
+    `<div class="detail-field"><span class="df-label">${esc(k)}</span><span class="df-val">${esc(v)}</span></div>`
+  ).join('');
+  const tags=(e.tags||[]).map(t=>`<span class="detail-tag">${esc(t)}</span>`).join('');
+  const imgBlock=e.image_url
+    ?`<div class="detail-img-wrap" onclick="openEditEntity('${e.id}')"><img src="${esc(e.image_url)}" alt=""/><div class="detail-img-ov">✏ Изменить</div></div>`
+    :`<div class="detail-img-wrap" onclick="openEditEntity('${e.id}')" style="font-size:2.5rem;opacity:.2">${cat.icon}<div class="detail-img-ov">+ Добавить фото</div></div>`;
+
+  document.getElementById('detail-content').innerHTML=`
+    <button class="back-btn" onclick="nav('wiki')">← Назад</button>
+    <div class="detail-hero">
+      ${imgBlock}
+      <div class="detail-meta">
+        <div class="detail-cat-badge" style="background:${color}22;color:${color}">${cat.icon} ${esc(cat.label==='Своя'?(e.custom_category||'Своя'):cat.label)}</div>
+        <div class="detail-name">${esc(e.name)}</div>
+        ${dynFields?`<div class="detail-fields">${dynFields}</div>`:''}
+        ${tags?`<div class="detail-tags">${tags}</div>`:''}
+        <div class="detail-actions">
+          <button class="btn btn-out" onclick="openEditEntity('${e.id}')">✏ Редактировать</button>
+          <button class="btn btn-danger" onclick="askDelEntity('${e.id}','${esc(e.name)}')">🗑 Удалить</button>
+        </div>
+      </div>
+    </div>
+    ${e.description?`<div class="detail-desc">${esc(e.description)}</div>`:''}
+    ${e.notes?`<div class="detail-section"><h3>📝 Заметки</h3><div style="line-height:1.9;color:var(--text2);white-space:pre-wrap">${esc(e.notes)}</div></div>`:''}
+  `;
+}
+
+// ── ADD / EDIT ENTITY ──
+function openAddEntity(){
+  if(!curProject){toast('Сначала выберите проект','bad');return;}
+  document.getElementById('entity-edit-id').value='';
+  document.getElementById('m-entity-title').textContent='+ Добавить сущность';
+  document.getElementById('entity-name').value='';
+  document.getElementById('entity-cat').value='char';
+  document.getElementById('entity-desc').value='';
+  document.getElementById('entity-err').style.display='none';
+  entityTags=[]; entityImgFile=null;
+  renderTags(); renderDynFields('char');
+  resetCustomFields();
+  document.getElementById('entity-img-txt').textContent='🖼 Нажмите чтобы загрузить изображение';
+  document.getElementById('entity-img-prev').style.display='none';
+  openM('m-entity');
+}
+
+function openEditEntity(id){
+  const e=allEntities.find(x=>x.id===id); if(!e) return;
+  document.getElementById('entity-edit-id').value=id;
+  document.getElementById('m-entity-title').textContent='✏ Редактировать';
+  document.getElementById('entity-name').value=e.name;
+  document.getElementById('entity-cat').value=e.category;
+  document.getElementById('entity-desc').value=e.description||'';
+  document.getElementById('entity-err').style.display='none';
+  entityTags=e.tags||[]; entityImgFile=null;
+  renderTags(); renderDynFields(e.category, e.extra_fields||{});
+  resetCustomFields(e.extra_custom_fields||{});
+  // Image preview
+  if(e.image_url){
+    document.getElementById('entity-img-txt').textContent='🖼 Текущее изображение сохранится';
+    document.getElementById('entity-img-prev').src=e.image_url;
+    document.getElementById('entity-img-prev').style.display='block';
+  } else {
+    document.getElementById('entity-img-txt').textContent='🖼 Нажмите чтобы загрузить изображение';
+    document.getElementById('entity-img-prev').style.display='none';
+  }
+  // Custom category
+  if(e.category==='custom'){
+    document.getElementById('custom-cat-wrap').style.display='block';
+    document.getElementById('entity-custom-cat').value=e.custom_category||'';
+  } else {
+    document.getElementById('custom-cat-wrap').style.display='none';
+  }
+  openM('m-entity');
+}
+
+function onCatChange(){
+  const v=document.getElementById('entity-cat').value;
+  document.getElementById('custom-cat-wrap').style.display=v==='custom'?'block':'none';
+  renderDynFields(v);
+}
+
+function renderDynFields(cat, vals={}){
+  const fields=CATS[cat]?.fields||[];
+  const wrap=document.getElementById('entity-dyn-fields');
+  if(!fields.length){wrap.innerHTML='';return;}
+  wrap.innerHTML='<div class="fg"><label>Характеристики</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">'+
+    fields.map(f=>`<div>
+      <div style="font-size:.68rem;color:var(--text3);margin-bottom:.2rem">${esc(f)}</div>
+      <input class="fi" id="df-${f}" value="${esc(vals[f]||'')}" placeholder="${esc(f)}"/>
+    </div>`).join('')+
+  '</div></div>';
+}
+
+function resetCustomFields(vals={}){
+  const list=document.getElementById('custom-fields-list');
+  list.innerHTML='';
+  Object.entries(vals).forEach(([k,v])=>addCustomField(k,v));
+}
+
+function addCustomField(key='',val=''){
+  const list=document.getElementById('custom-fields-list');
+  const row=document.createElement('div');
+  row.className='cf-row';
+  row.innerHTML=`<input class="fi cf-key" placeholder="Поле" value="${esc(key)}" style="flex:.45"/>
+    <input class="fi cf-val" placeholder="Значение" value="${esc(val)}" style="flex:.55"/>
+    <button class="icon-btn danger" onclick="this.parentElement.remove()">✕</button>`;
+  list.appendChild(row);
+}
+
+// Tags
+function renderTags(){
+  document.getElementById('tags-list').innerHTML=entityTags.map((t,i)=>
+    `<span class="tag-chip">${esc(t)}<button onclick="removeTag(${i})">✕</button></span>`).join('');
+}
+function removeTag(i){entityTags.splice(i,1);renderTags();}
+function onTagKey(e){if(e.key==='Enter'){e.preventDefault();addTag();}}
+function addTag(){
+  const inp=document.getElementById('tag-input');
+  const v=inp.value.trim();
+  if(v&&!entityTags.includes(v)){entityTags.push(v);renderTags();}
+  inp.value='';
+}
+function onEntityImg(e){
+  entityImgFile=e.target.files[0];
+  if(entityImgFile){
+    const url=URL.createObjectURL(entityImgFile);
+    document.getElementById('entity-img-prev').src=url;
+    document.getElementById('entity-img-prev').style.display='block';
+    document.getElementById('entity-img-txt').textContent='✅ '+entityImgFile.name;
+  }
+}
+
+async function saveEntity(){
+  const id=document.getElementById('entity-edit-id').value;
+  const name=document.getElementById('entity-name').value.trim();
+  const cat=document.getElementById('entity-cat').value;
+  const desc=document.getElementById('entity-desc').value.trim();
+  const customCat=document.getElementById('entity-custom-cat').value.trim();
+  const err=document.getElementById('entity-err');
+  err.style.display='none';
+  if(!name){err.textContent='Название обязательно';err.style.display='block';return;}
+  if(cat==='custom'&&!customCat){err.textContent='Укажите название своей категории';err.style.display='block';return;}
+  setLoad(true);
+
+  // Собираем динамические поля
+  const fields=CATS[cat]?.fields||[];
+  const extra_fields={};
+  fields.forEach(f=>{
+    const el=document.getElementById('df-'+f);
+    if(el?.value.trim()) extra_fields[f]=el.value.trim();
+  });
+  // Кастомные поля
+  const extra_custom_fields={};
+  document.querySelectorAll('#custom-fields-list .cf-row').forEach(row=>{
+    const k=row.querySelector('.cf-key').value.trim();
+    const v=row.querySelector('.cf-val').value.trim();
+    if(k) extra_custom_fields[k]=v;
+  });
+
+  // Загрузка изображения
+  let image_url=id?(allEntities.find(e=>e.id===id)?.image_url||null):null;
+  if(entityImgFile){
+    const path=`${curUser.id}/${Date.now()}_${entityImgFile.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+    const {error:upErr}=await sb.storage.from('wiki-images').upload(path,entityImgFile);
+    if(!upErr) image_url=sb.storage.from('wiki-images').getPublicUrl(path).data.publicUrl;
+  }
+
+  const payload={
+    project_id:curProject.id, user_id:curUser.id,
+    name, category:cat, custom_category:cat==='custom'?customCat:null,
+    description:desc||null, tags:entityTags,
+    extra_fields, extra_custom_fields, image_url
+  };
+
+  if(id){
+    await sb.from('wiki_entities').update(payload).eq('id',id);
+    toast('Карточка обновлена!');
+  } else {
+    await sb.from('wiki_entities').insert(payload);
+    toast('Карточка добавлена!');
+  }
+  setLoad(false);
+  closeM('m-entity');
+  await loadEntities(curProject.id);
+  renderWiki();
+  entityTags=[]; entityImgFile=null;
+}
+
+function askDelEntity(id,name){
+  document.getElementById('m-del-title').textContent='Удалить «'+name+'»?';
+  document.getElementById('m-del-text').textContent='Карточка будет удалена из вики.';
+  document.getElementById('m-del-confirm').onclick=()=>delEntity(id);
+  openM('m-del');
+}
+async function delEntity(id){
+  setLoad(true);
+  await sb.from('wiki_entities').delete().eq('id',id);
+  allEntities=allEntities.filter(e=>e.id!==id);
+  setLoad(false);
+  closeM('m-del');
+  renderWiki();
+  if(document.getElementById('page-detail').classList.contains('show')) nav('wiki');
+  toast('Карточка удалена','bad');
+}
+
+// ── AI AUTOSORT ──
+function toggleAiOpt(cb){
+  cb.closest('.ai-opt').classList.toggle('sel', cb.checked);
+}
+
+async function runAI(){
+  const text=document.getElementById('ai-text').value.trim();
+  if(text.length<50){toast('Текст слишком короткий (минимум 50 символов)','bad');return;}
+  const opts=[...document.querySelectorAll('#ai-opts input:checked')].map(i=>i.value);
+  if(!opts.length){toast('Выберите хотя бы один тип сущностей','bad');return;}
+
+  document.getElementById('ai-run-btn').disabled=true;
+  document.getElementById('ai-run-btn').textContent='⏳ Анализирую...';
+  document.getElementById('ai-result-wrap').style.display='none';
+
+  const catLabels={char:'Персонажей',loc:'Локации',item:'Предметы',event:'События',org:'Организации'};
+  const wanted=opts.map(o=>catLabels[o]).join(', ');
+
+  const prompt=`Ты — ассистент для создания вики по художественным произведениям.
+
+Проанализируй следующий текст и извлеки из него сущности категорий: ${wanted}.
+
+Для каждой сущности верни JSON-объект со следующими полями:
+- "name": название/имя
+- "category": одно из: "char", "loc", "item", "event", "org"
+- "description": краткое описание (2-4 предложения) на русском языке
+- "tags": массив из 2-5 коротких тегов
+
+Верни ТОЛЬКО валидный JSON-массив объектов без какого-либо другого текста, объяснений или markdown-блоков.
+
+ТЕКСТ:
+${text.slice(0,3000)}`;
+
+  try {
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data=await resp.json();
+    const raw=data.content?.[0]?.text||'';
+    // Убираем возможные markdown-обёртки
+    const clean=raw.replace(/```json|```/g,'').trim();
+    aiResults=JSON.parse(clean);
+    renderAIResults();
+  } catch(ex){
+    toast('Ошибка ИИ: '+ex.message,'bad');
+  }
+  document.getElementById('ai-run-btn').disabled=false;
+  document.getElementById('ai-run-btn').textContent='✨ Анализировать текст';
+}
+
+function renderAIResults(){
+  const wrap=document.getElementById('ai-results');
+  if(!aiResults.length){wrap.innerHTML='<div style="color:var(--text3);font-style:italic;text-align:center;padding:1rem">Сущностей не найдено. Попробуйте другой текст.</div>';return;}
+
+  wrap.innerHTML=aiResults.map((r,i)=>{
+    const cat=CATS[r.category]||{label:r.category,icon:'✏',color:'var(--cat-custom)'};
+    const tags=(r.tags||[]).map(t=>`<span class="ec-tag">${esc(t)}</span>`).join('');
+    return `<div class="ai-result-card">
+      <div class="ai-rc-check checked" id="ai-chk-${i}" onclick="toggleAICheck(${i})">✓</div>
+      <div class="ai-rc-body">
+        <div class="ai-rc-name">${esc(r.name)}</div>
+        <div class="ai-rc-cat" style="color:${cat.color}">${cat.icon} ${esc(cat.label)}</div>
+        <div class="ai-rc-desc">${esc(r.description||'')}</div>
+        ${tags?`<div class="ec-tags" style="margin-top:.35rem">${tags}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('ai-result-wrap').style.display='block';
+  document.getElementById('ai-save-btn').style.display='inline-flex';
+}
+
+function toggleAICheck(i){
+  const el=document.getElementById('ai-chk-'+i);
+  el.classList.toggle('checked');
+  el.textContent=el.classList.contains('checked')?'✓':'';
+}
+
+function selectAllAI(v){
+  aiResults.forEach((_,i)=>{
+    const el=document.getElementById('ai-chk-'+i);
+    if(v){el.classList.add('checked');el.textContent='✓';}
+    else{el.classList.remove('checked');el.textContent='';}
+  });
+}
+
+async function saveAIResults(){
+  const projId=document.getElementById('ai-proj-select').value;
+  if(!projId){toast('Выберите проект','bad');return;}
+  const selected=aiResults.filter((_,i)=>document.getElementById('ai-chk-'+i)?.classList.contains('checked'));
+  if(!selected.length){toast('Выберите хотя бы одну карточку','bad');return;}
+  setLoad(true);
+  const rows=selected.map(r=>({
+    project_id:projId, user_id:curUser.id,
+    name:r.name, category:r.category||'char',
+    description:r.description||null, tags:r.tags||[], extra_fields:{}, extra_custom_fields:{}
+  }));
+  const {error}=await sb.from('wiki_entities').insert(rows);
+  setLoad(false);
+  if(error){toast('Ошибка сохранения: '+error.message,'bad');return;}
+  toast(`Сохранено ${selected.length} карточек! 🎉`);
+  document.getElementById('ai-save-btn').style.display='none';
+  // Обновляем данные если текущий проект совпадает
+  if(curProject?.id===projId) await loadEntities(projId);
+  aiResults=[];
+  document.getElementById('ai-result-wrap').style.display='none';
+  document.getElementById('ai-text').value='';
+}
+
+// ── HELPERS ──
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+function setLoad(v){document.getElementById('lov').classList.toggle('show',v);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmtDate(iso){return new Date(iso).toLocaleDateString('ru',{day:'numeric',month:'short'});}
+let _tt;
+function toast(msg,type='ok'){
+  const el=document.getElementById('toast');
+  el.textContent=(type==='ok'?'✓ ':'✗ ')+msg;
+  el.className='toast show '+type;
+  clearTimeout(_tt);
+  _tt=setTimeout(()=>el.classList.remove('show'),3200);
+}
+
+// Закрытие модалок по клику на фон
+document.querySelectorAll('.mbd').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m) m.classList.remove('open');});
+});
+document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+</script>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Romsk — Приложения</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;font-family:'Crimson Pro',Georgia,serif;background:#0c0f0a;color:#e8ede4;overflow-x:hidden}
+
+:root{
+  --bg:#0c0f0a;--bg2:#131810;--bg3:#1a2016;--bg4:#202820;
+  --border:#2a3528;--accent:#6dbe8a;--accentDim:rgba(109,190,138,.12);
+  --text:#e8ede4;--text2:#8aaa90;--text3:#4a6050;
+  --gold:#c8a84b;--r:16px;
+}
+
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(109,190,138,.055) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(200,168,75,.04) 0%, transparent 55%);
+  pointer-events:none;z-index:0;
+}
+
+.page{
+  position:relative;z-index:1;
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:3rem 1.4rem 4rem;
+}
+
+.header{text-align:center;margin-bottom:3.5rem}
+.header-eyebrow{
+  font-size:.68rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;
+  color:var(--accent);opacity:.7;margin-bottom:.9rem;
+}
+.header-logo{
+  font-family:'Playfair Display',serif;font-size:clamp(2.8rem,8vw,5rem);
+  font-weight:900;line-height:1;letter-spacing:-.03em;
+  background:linear-gradient(145deg,#e8ede4 0%,#6dbe8a 45%,#c8a84b 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:.6rem;
+}
+.header-sub{
+  font-size:1.1rem;color:var(--text2);font-style:italic;
+  max-width:420px;margin:0 auto;line-height:1.7;
+}
+
+.apps{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:1.2rem;width:100%;max-width:900px;
+}
+
+.app-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:2rem 1.8rem 1.6rem;
+  cursor:pointer;text-decoration:none;color:inherit;
+  transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  position:relative;overflow:hidden;display:flex;flex-direction:column;gap:1rem;
+}
+.app-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg, var(--card-glow,rgba(109,190,138,.05)) 0%, transparent 60%);
+  transition:opacity .25s;opacity:0;
+}
+.app-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 20px 60px rgba(0,0,0,.55);
+  border-color:var(--card-accent, var(--accent));
+}
+.app-card:hover::before{opacity:1}
+
+.app-card-bar{
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--card-accent, var(--accent));
+  opacity:.6;transition:opacity .2s;
+}
+.app-card:hover .app-card-bar{opacity:1}
+
+.app-icon{
+  width:54px;height:54px;border-radius:14px;
+  background:var(--card-icon-bg, var(--accentDim));
+  border:1px solid var(--card-accent, var(--border));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;flex-shrink:0;
+}
+.app-head{display:flex;align-items:center;gap:.9rem}
+.app-name{
+  font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;
+  line-height:1;letter-spacing:-.01em;
+}
+.app-version{
+  font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--card-accent,var(--accent));opacity:.7;margin-top:.2rem;
+}
+.app-desc{font-size:.9rem;color:var(--text2);line-height:1.7;flex:1}
+.app-tags{display:flex;gap:.35rem;flex-wrap:wrap}
+.app-tag{
+  font-size:.65rem;font-weight:600;letter-spacing:.04em;
+  padding:.15rem .5rem;border-radius:6px;
+  background:var(--card-tag-bg, rgba(109,190,138,.1));
+  color:var(--card-accent, var(--accent));
+  border:1px solid var(--card-accent-dim, rgba(109,190,138,.2));
+}
+.app-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:.9rem;border-top:1px solid var(--border);
+  font-size:.75rem;color:var(--text3);
+}
+.app-arrow{
+  display:inline-flex;align-items:center;gap:.35rem;
+  font-size:.78rem;font-weight:700;color:var(--card-accent,var(--accent));
+  transition:gap .15s;
+}
+.app-card:hover .app-arrow{gap:.6rem}
+
+.card-wiki{
+  --card-accent:#6dbe8a;
+  --card-glow:rgba(109,190,138,.07);
+  --card-icon-bg:rgba(109,190,138,.1);
+  --card-tag-bg:rgba(109,190,138,.08);
+  --card-accent-dim:rgba(109,190,138,.18);
+}
+.card-chat{
+  --card-accent:#a78bfa;
+  --card-glow:rgba(167,139,250,.07);
+  --card-icon-bg:rgba(167,139,250,.1);
+  --card-tag-bg:rgba(167,139,250,.08);
+  --card-accent-dim:rgba(167,139,250,.18);
+}
+.card-coming{
+  --card-accent:#4a6050;
+  opacity:.5;cursor:default;pointer-events:none;
+}
+
+.section-label{
+  width:100%;max-width:900px;
+  font-size:.65rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:.7rem;margin-top:2rem;
+  display:flex;align-items:center;gap:.8rem;
+}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.site-footer{
+  margin-top:4rem;text-align:center;
+  font-size:.72rem;color:var(--text3);line-height:2;
+}
+.site-footer a{color:var(--accent);text-decoration:none}
+.site-footer a:hover{text-decoration:underline}
+
+@media(max-width:500px){
+  .apps{grid-template-columns:1fr}
+  .header-logo{font-size:3rem}
+  .page{padding:2rem 1rem 3rem}
+}
+
+.header{animation:fadeUp .6s ease both}
+.apps .app-card:nth-child(1){animation:fadeUp .6s .1s ease both}
+.apps .app-card:nth-child(2){animation:fadeUp .6s .2s ease both}
+.apps .app-card:nth-child(3){animation:fadeUp .6s .3s ease both}
+.apps .app-card:nth-child(4){animation:fadeUp .6s .4s ease both}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(18px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.card-reader{
+  --card-accent:#38bdf8;
+  --card-glow:rgba(56,189,248,.07);
+  --card-icon-bg:rgba(56,189,248,.1);
+  --card-tag-bg:rgba(56,189,248,.08);
+  --card-accent-dim:rgba(56,189,248,.18);
+}
+.card-library{
+  --card-accent:#c8a84b;
+  --card-glow:rgba(200,168,75,.07);
+  --card-icon-bg:rgba(200,168,75,.1);
+  --card-tag-bg:rgba(200,168,75,.08);
+  --card-accent-dim:rgba(200,168,75,.18);
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-eyebrow">Экосистема приложений</div>
+    <div class="header-logo">Romsk</div>
+    <div class="header-sub">Инструменты для чтения, написания и создания миров</div>
+  </div>
+
+  <div class="section-label">Доступно сейчас</div>
+  <div class="apps">
+
+    <a href="Roboosk-Wiki/" class="app-card card-wiki">
+      <div class="app-card-bar"></div>
+      <div class="app-head">
+        <div class="app-icon">📖</div>
+        <div>
+          <div class="app-name">RoBoosk Wiki</div>
+          <div class="app-version">Alpha 0.1</div>
+        </div>
+      </div>
+      <div class="app-desc">Создавайте вики по вашему миру — персонажи, локации, предметы, события. ИИ автоматически извлекает сущности из текста и создаёт карточки.</div>
+      <div class="app-tags">
+        <span class="app-tag">Вики</span>
+        <span class="app-tag">ИИ сортировка</span>
+        <span class="app-tag">Карточки</span>
+      </div>
+      <div class="app-footer">
+        <span>Для писателей и создателей миров</span>
+        <span class="app-arrow">Открыть →</span>
+      </div>
+    </a>
+
+    <a href="Roboosk-Chat/" class="app-card card-romessk">
+      <div class="app-card-bar"></div>
+      <div class="app-head">
+        <div class="app-icon">✉</div>
+        <div>
+          <div class="app-name">Roboosk Chat</div>
+          <div class="app-version">Alpha 0.2</div>
+        </div>
+      </div>
+      <div class="app-desc">Мессенджер с личными сообщениями в реальном времени. Личный чат для заметок, темы оформления.</div>
+      <div class="app-tags">
+        <span class="app-tag">Мессенджер</span>
+        <span class="app-tag">Realtime</span>
+        <span class="app-tag">Личное</span>
+      </div>
+      <div class="app-footer">
+        <span>Общайтесь с читателями</span>
+        <span class="app-arrow">Открыть →</span>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="section-label" style="margin-top:2.5rem">Читалка и библиотека</div>
+  <div class="apps">
+
+    <a href="Roboosk-Reader/" class="app-card card-reader">
+      <div class="app-card-bar"></div>
+      <div class="app-head">
+        <div class="app-icon">📚</div>
+        <div>
+          <div class="app-name">RoBoosk</div>
+          <div class="app-version">Alpha 1.93</div>
+        </div>
+      </div>
+      <div class="app-desc">Читалка с поддержкой EPUB, FB2, RTF. Темы, закладки, оглавление, озвучивание текста.</div>
+      <div class="app-tags">
+        <span class="app-tag">Читалка</span>
+        <span class="app-tag">EPUB / FB2</span>
+        <span class="app-tag">TTS</span>
+      </div>
+      <div class="app-footer">
+        <span>Читайте комфортно</span>
+        <span class="app-arrow">Открыть →</span>
+      </div>
+    </a>
+
+    <a href="Roboosk-Library/" class="app-card card-library">
+      <div class="app-card-bar" style="background:var(--gold)"></div>
+      <div class="app-head">
+        <div class="app-icon">🌐</div>
+        <div>
+          <div class="app-name">Roboosk Library</div>
+          <div class="app-version">v1.12</div>
+        </div>
+      </div>
+      <div class="app-desc">Онлайн-библиотека с каталогом книг, отзывами, рейтингами и подписками на авторов.</div>
+      <div class="app-tags">
+        <span class="app-tag">Библиотека</span>
+        <span class="app-tag">Отзывы</span>
+        <span class="app-tag">Авторы</span>
+      </div>
+      <div class="app-footer">
+        <span>Делитесь книгами</span>
+        <span class="app-arrow">Открыть →</span>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="site-footer">
+    Сделано с ♥ by <a href="#">Romsk</a><br/>
+    Все приложения используют единый аккаунт
+  </div>
+
+</div>
+</body>
+</html>

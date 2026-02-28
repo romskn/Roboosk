@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<link rel="icon" type="image/png" href="assets/R.png"/>
+<link rel="apple-touch-icon" href="assets/R.png"/>
+<link rel="manifest" href="manifest.json"/>
+<title>RoBoosk v1.93</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Segoe UI',system-ui,sans-serif;font-size:14px}
+button,input,textarea,select{font-family:inherit;font-size:inherit}
+
+/* ── THEMES ── */
+:root{
+  --bg:#0d1410;--bg2:#141d17;--bg3:#1b2820;--bg4:#223028;
+  --border:#253328;--accent:#5cbe7c;--accentDim:rgba(92,190,124,.15);
+  --accentFg:#0a1a10;--text:#ddf0e4;--text2:#6a9a78;--text3:#3a5a45;
+  --danger:#e05555;--success:#5cbe7c;--warn:#e0a040;
+  --shadow:0 8px 32px rgba(0,0,0,.5);--r:12px;--r2:8px;--tr:.14s ease;
+}
+.th-midnight{--bg:#0a0a0f;--bg2:#13131a;--bg3:#1c1c26;--bg4:#222233;--border:#2a2a3a;--accent:#7c6af7;--accentDim:rgba(124,106,247,.14);--accentFg:#fff;--text:#e8e8f8;--text2:#8888aa;--text3:#4a4a6a}
+.th-ocean{--bg:#060e1a;--bg2:#0c1828;--bg3:#132035;--bg4:#172540;--border:#1a2d45;--accent:#38bdf8;--accentDim:rgba(56,189,248,.13);--accentFg:#010f1e;--text:#e0f2fe;--text2:#5a8aaa;--text3:#2a4a66}
+.th-rose{--bg:#1a0d12;--bg2:#24131a;--bg3:#2e1a22;--bg4:#381f29;--border:#3d2030;--accent:#f472b6;--accentDim:rgba(244,114,182,.13);--accentFg:#1a0010;--text:#fce7f3;--text2:#bb6688;--text3:#663344}
+.th-parch{--bg:#f5f0e8;--bg2:#ede8dc;--bg3:#e5dece;--bg4:#ddd6c4;--border:#cec8b8;--accent:#8b5e3c;--accentDim:rgba(139,94,60,.1);--accentFg:#fff8f0;--text:#2a1f10;--text2:#7a6a52;--text3:#b0a090;--shadow:0 8px 32px rgba(0,0,0,.1)}
+.th-slate{--bg:#f0f2f5;--bg2:#e8eaed;--bg3:#dde0e5;--bg4:#d2d5dc;--border:#c8ccd4;--accent:#5865f2;--accentDim:rgba(88,101,242,.1);--accentFg:#fff;--text:#1a1c2e;--text2:#5a5e7a;--text3:#9a9eb0;--shadow:0 8px 32px rgba(0,0,0,.08)}
+
+body{background:var(--bg);color:var(--text);transition:background .25s,color .25s}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+
+/* ── APP SHELL ── */
+#app{display:flex;flex-direction:column;min-height:100vh}
+
+/* ── TOPBAR ── */
+.topbar{
+  display:flex;align-items:center;gap:.5rem;padding:.6rem 1.2rem;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:200;flex-shrink:0;
+}
+.logo{font-size:1.35rem;font-weight:900;color:var(--accent);cursor:pointer;user-select:none;letter-spacing:-.04em}
+.logo sup{font-size:.48rem;font-weight:400;color:var(--text3);letter-spacing:0}
+.tb-gap{flex:1}
+.tb-btn{
+  display:inline-flex;align-items:center;gap:.3rem;
+  padding:.36rem .8rem;border:none;border-radius:var(--r2);
+  font-size:.8rem;font-weight:700;cursor:pointer;transition:var(--tr);white-space:nowrap;
+}
+.tb-btn-ghost{background:transparent;color:var(--text2)}
+.tb-btn-ghost:hover{background:var(--bg3);color:var(--text)}
+.tb-btn-outline{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.tb-btn-outline:hover{background:var(--accent);color:var(--accentFg)}
+.tb-btn-prim{background:var(--accent);color:var(--accentFg)}
+.tb-btn-prim:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.vsep{width:1px;height:16px;background:var(--border);flex-shrink:0}
+.icon-btn{
+  background:transparent;border:none;color:var(--text2);
+  cursor:pointer;padding:.28rem .35rem;border-radius:6px;
+  font-size:.95rem;transition:var(--tr);display:inline-flex;align-items:center;
+}
+.icon-btn:hover{background:var(--bg3);color:var(--text)}
+
+/* ── PAGES ── */
+.page{flex:1;padding:2rem 1.6rem;max-width:1200px;margin:0 auto;width:100%;display:none}
+.page.show{display:block}
+
+/* ── HOME ── */
+.hero{margin-bottom:2rem}
+.hero h1{font-size:clamp(1.7rem,4vw,2.6rem);font-weight:900;line-height:1.1;margin-bottom:.4rem}
+.hero h1 em{color:var(--accent);font-style:normal}
+.hero p{color:var(--text2);font-size:.9rem}
+.qcards{display:flex;gap:.75rem;margin-bottom:2rem;flex-wrap:wrap}
+.qcard{
+  flex:1;min-width:155px;background:var(--bg2);
+  border:1px solid var(--border);border-radius:var(--r);
+  padding:1.1rem;cursor:pointer;transition:var(--tr);
+}
+.qcard:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow)}
+.qcard-icon{font-size:1.5rem;margin-bottom:.4rem}
+.qcard h3{font-size:.9rem;font-weight:700;margin-bottom:.2rem}
+.qcard p{color:var(--text2);font-size:.75rem;line-height:1.5}
+.sec-hd{
+  font-size:1.05rem;font-weight:700;margin-bottom:.9rem;
+  display:flex;align-items:center;gap:.6rem;
+}
+.sec-hd::after{content:'';flex:1;height:1px;background:var(--border)}
+.sec-hd-cnt{font-size:.75rem;font-weight:400;color:var(--text3)}
+
+/* ── LIBRARY GRID ── */
+.lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.75rem}
+.bk{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;cursor:pointer;
+  transition:var(--tr);position:relative;
+}
+.bk:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow)}
+.bk-cover{width:100%;aspect-ratio:2/3;background:var(--bg3);overflow:hidden;position:relative}
+.bk-cover img{width:100%;height:100%;object-fit:cover}
+.bk-ph{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  width:100%;height:100%;padding:.7rem;text-align:center;
+  background:linear-gradient(135deg,var(--accentDim),var(--bg3));
+}
+.bk-ph-icon{font-size:1.8rem;margin-bottom:.25rem}
+.bk-ph-title{font-size:.7rem;color:var(--accent);font-weight:700;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+.bk-info{padding:.5rem .6rem}
+.bk-title{font-size:.82rem;font-weight:700;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.bk-author{color:var(--text2);font-size:.68rem;margin-top:.12rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.bk-badge{display:inline-flex;padding:.06rem .3rem;background:var(--accentDim);color:var(--accent);border-radius:4px;font-size:.62rem;font-weight:700;margin-top:.2rem}
+.bk-acts{position:absolute;top:.3rem;right:.3rem;display:flex;gap:.15rem;opacity:0;transition:var(--tr)}
+.bk:hover .bk-acts{opacity:1}
+.bk-acts .icon-btn{background:var(--bg2);font-size:.72rem;padding:.22rem .27rem;border:1px solid var(--border)}
+.lib-empty{text-align:center;padding:3rem;color:var(--text3)}
+.lib-empty .ei{font-size:2.8rem;opacity:.3;margin-bottom:.6rem}
+
+/* ── EDITOR ── */
+.editor-wrap{display:none;flex:1;height:calc(100vh - 51px);overflow:hidden}
+.editor-wrap.show{display:flex}
+.e-side{
+  width:250px;min-width:250px;background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.e-main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.e-sec{padding:.65rem .75rem;border-bottom:1px solid var(--border)}
+.flbl{display:block;font-size:.64rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:.25rem}
+.fi,.fta{
+  width:100%;background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r2);color:var(--text);
+  padding:.38rem .52rem;outline:none;transition:var(--tr);resize:none;
+}
+.fi:focus,.fta:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accentDim)}
+.cov-btn{
+  width:100%;aspect-ratio:2/3;background:var(--bg3);
+  border:2px dashed var(--border);border-radius:var(--r2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:var(--tr);overflow:hidden;position:relative;
+  font-size:.72rem;color:var(--text3);text-align:center;gap:.3rem;
+}
+.cov-btn:hover{border-color:var(--accent);color:var(--accent)}
+.cov-btn img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cov-btn-ov{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:var(--tr);font-size:.75rem;color:#fff}
+.cov-btn:hover .cov-btn-ov{opacity:1}
+.ch-list{flex:1;overflow-y:auto;padding:.3rem}
+.ch-item{
+  display:flex;align-items:flex-start;gap:.3rem;padding:.35rem .5rem;
+  border-radius:var(--r2);cursor:pointer;transition:var(--tr);
+}
+.ch-item:hover{background:var(--bg3)}
+.ch-item.act{background:var(--accentDim);color:var(--accent)}
+.ch-num{color:var(--text3);font-size:.65rem;min-width:14px;padding-top:.1rem;flex-shrink:0}
+.ch-info{flex:1;min-width:0}
+.ch-name{font-size:.8rem;font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.ch-anc{font-size:.63rem;color:var(--text3);margin-top:.05rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.ch-item.act .ch-anc{color:color-mix(in srgb,var(--accent) 55%,transparent)}
+.ch-del{opacity:0;transition:var(--tr);flex-shrink:0}
+.ch-item:hover .ch-del{opacity:1}
+.e-toolbar{
+  padding:.4rem .75rem;background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;flex-shrink:0;
+}
+.ch-title-fi{
+  flex:1;min-width:120px;background:transparent;border:none;
+  color:var(--text);font-size:1rem;font-weight:700;outline:none;
+}
+.ch-title-fi::placeholder{color:var(--text3)}
+.as-badge{font-size:.68rem;color:var(--text3);transition:var(--tr)}
+.as-badge.saving{color:var(--warn)}
+.as-badge.saved{color:var(--success)}
+.anch-bar{
+  padding:.22rem 1.8rem;font-size:.7rem;color:var(--accent);
+  background:var(--accentDim);border-bottom:1px solid var(--border);flex-shrink:0;
+  display:none;
+}
+.draft-bar{
+  padding:.3rem 1.2rem;font-size:.74rem;color:var(--text2);
+  background:var(--accentDim);border-bottom:1px solid var(--border);flex-shrink:0;
+  display:none;align-items:center;gap:.6rem;
+}
+.e-body{flex:1;padding:1.4rem 2rem;overflow-y:auto}
+.ch-ta{
+  width:100%;min-height:calc(100vh - 200px);
+  background:transparent;border:none;outline:none;
+  color:var(--text);line-height:1.9;resize:none;
+}
+.wc{font-size:.68rem;color:var(--text3);margin-bottom:.45rem}
+.exp-wrap{position:relative}
+.exp-drop{
+  display:none;position:absolute;bottom:calc(100% + .35rem);right:0;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r2);min-width:155px;box-shadow:var(--shadow);z-index:50;overflow:hidden;
+}
+.exp-drop.open{display:block}
+.exp-item{
+  display:flex;align-items:center;gap:.45rem;padding:.46rem .72rem;
+  cursor:pointer;font-size:.79rem;transition:var(--tr);
+}
+.exp-item:hover{background:var(--bg3);color:var(--accent)}
+
+/* ── READER ── */
+.reader-wrap{display:none;flex:1;flex-direction:column;height:calc(100vh - 51px);overflow:hidden}
+.reader-wrap.show{display:flex}
+.r-prog{height:2px;background:var(--bg3);flex-shrink:0}
+.r-prog-fill{height:100%;background:var(--accent);transition:width .2s}
+.r-toolbar{
+  padding:.4rem 1.1rem;background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;flex-shrink:0;
+}
+.r-main{display:flex;flex:1;overflow:hidden}
+.r-toc{width:210px;min-width:210px;background:var(--bg2);border-right:1px solid var(--border);padding:.65rem;overflow-y:auto;flex-shrink:0}
+.r-toc h3{font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem}
+.toc-i{padding:.27rem .44rem;border-radius:var(--r2);cursor:pointer;font-size:.78rem;color:var(--text2);transition:var(--tr);line-height:1.4}
+.toc-i:hover{background:var(--bg3);color:var(--text)}
+.toc-i-anc{font-size:.63rem;color:var(--text3);padding-left:.4rem;margin-top:.03rem}
+.r-body{flex:1;overflow-y:auto;padding:2rem 2.5rem;display:flex;justify-content:center}
+.r-content{max-width:680px;width:100%}
+.r-cover{max-width:200px;border-radius:8px;box-shadow:var(--shadow);display:block;margin:0 auto 1.6rem}
+.r-book-title{font-size:1.9rem;font-weight:900;margin-bottom:.3rem;line-height:1.1}
+.r-meta{color:var(--text2);font-size:.84rem;border-bottom:1px solid var(--border);padding-bottom:1.1rem;margin-bottom:1.4rem}
+.r-ch-hd{font-size:1.3rem;font-weight:700;margin:2.2rem 0 .7rem;padding-top:1.6rem;border-top:1px solid var(--border);line-height:1.2}
+.r-ch-hd:first-of-type{margin-top:0;padding-top:0;border-top:none}
+.r-text{white-space:pre-wrap;line-height:1.9;color:var(--text)}
+.r-text mark{background:color-mix(in srgb,var(--accent) 35%,transparent);border-radius:2px;color:inherit}
+.bm-panel{width:220px;min-width:220px;background:var(--bg2);border-left:1px solid var(--border);padding:.65rem;overflow-y:auto;flex-shrink:0}
+.bm-panel h3{font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem}
+.bm-item{
+  display:flex;align-items:center;padding:.35rem .44rem;
+  border-radius:var(--r2);cursor:pointer;font-size:.76rem;
+  border-bottom:1px solid var(--border);transition:var(--tr);
+}
+.bm-item:hover{background:var(--bg3)}
+.bm-txt{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:var(--text2)}
+.fs-ctrl{display:flex;align-items:center;gap:.25rem}
+.fs-val{min-width:22px;text-align:center;font-size:.73rem;color:var(--text2)}
+.fs-b{
+  background:var(--bg3);border:1px solid var(--border);border-radius:5px;
+  width:20px;height:20px;cursor:pointer;color:var(--text);
+  display:flex;align-items:center;justify-content:center;transition:var(--tr);font-size:.85rem;
+}
+.fs-b:hover{background:var(--accent);border-color:var(--accent);color:var(--accentFg)}
+.srch-bar{display:flex;align-items:center;gap:.3rem;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:.15rem .38rem}
+.srch-bar input{background:transparent;border:none;outline:none;color:var(--text);width:140px}
+
+/* ── SETTINGS ── */
+.sett-page{max-width:680px}
+.sett-page h1{font-size:1.75rem;font-weight:900;margin-bottom:.3rem}
+.sett-page>p{color:var(--text2);font-size:.87rem;margin-bottom:1.6rem}
+.scard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem;margin-bottom:.85rem}
+.scard h2{font-size:1rem;font-weight:700;margin-bottom:.85rem}
+.th-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem}
+.th-btn{
+  display:flex;flex-direction:column;align-items:center;gap:.24rem;
+  padding:.45rem .35rem;border-radius:var(--r2);border:2px solid var(--border);
+  background:var(--bg3);cursor:pointer;transition:var(--tr);
+  font-size:.7rem;color:var(--text2);font-weight:600;
+}
+.th-btn:hover{border-color:var(--accent);color:var(--accent)}
+.th-btn.sel{border-color:var(--accent);background:var(--accentDim);color:var(--accent)}
+.th-dot{width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,.12)}
+.irow{display:flex;justify-content:space-between;align-items:center;padding:.42rem 0;border-bottom:1px solid var(--border);font-size:.84rem}
+.irow:last-child{border-bottom:none}
+.irow span{color:var(--text2)}
+.trow{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border)}
+.trow:last-child{border-bottom:none}
+.trow-l .tl{font-size:.85rem;font-weight:600}
+.trow-l .ts{font-size:.72rem;color:var(--text2);margin-top:.08rem}
+.toggle{position:relative;display:inline-flex;cursor:pointer}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.ttrack{width:38px;height:21px;border-radius:11px;background:var(--bg3);border:1px solid var(--border);transition:var(--tr);position:relative}
+.toggle input:checked~.ttrack{background:var(--accent);border-color:var(--accent)}
+.tthumb{position:absolute;top:3px;left:3px;width:13px;height:13px;border-radius:50%;background:#fff;transition:var(--tr);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.toggle input:checked~.ttrack .tthumb{left:20px}
+
+/* ── LIBRARY BACKUP ── */
+.backup-btns{display:flex;gap:.5rem;flex-wrap:wrap}
+
+/* ── MODAL ── */
+.mbd{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);
+  backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center;padding:1rem;
+}
+.mbd.open{display:flex}
+.modal{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:1.5rem;width:100%;box-shadow:var(--shadow);max-height:90vh;overflow-y:auto;
+  animation:mIn .16s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes mIn{from{opacity:0;transform:scale(.93) translateY(-10px)}to{opacity:1;transform:none}}
+.modal h2{font-size:1.2rem;font-weight:700;margin-bottom:.9rem}
+.m-actions{display:flex;gap:.4rem;justify-content:flex-end;margin-top:1.1rem}
+.fg{margin-bottom:.7rem}
+.fg label{display:block;font-size:.63rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:.22rem}
+.hint{font-size:.69rem;color:var(--text3);margin-top:.22rem;line-height:1.4}
+.dz{
+  border:2px dashed var(--border);border-radius:var(--r);
+  padding:2rem;text-align:center;cursor:pointer;transition:var(--tr);color:var(--text2);
+}
+.dz:hover,.dz.over{border-color:var(--accent);background:var(--accentDim);color:var(--accent)}
+.dz-icon{font-size:2.2rem;margin-bottom:.5rem}
+.err{margin-top:.5rem;font-size:.76rem;color:var(--danger);background:color-mix(in srgb,var(--danger) 10%,transparent);border-radius:var(--r2);padding:.38rem .6rem;display:none}
+.imp-meta{display:flex;gap:.9rem;margin-bottom:.7rem}
+.imp-cov{width:90px;flex-shrink:0}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:.3rem;padding:.38rem .85rem;border:none;border-radius:var(--r2);font-size:.79rem;font-weight:700;cursor:pointer;transition:var(--tr);white-space:nowrap}
+.btn-ghost{background:transparent;color:var(--text2)}
+.btn-ghost:hover{background:var(--bg3);color:var(--text)}
+.btn-prim{background:var(--accent);color:var(--accentFg)}
+.btn-prim:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-out{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.btn-out:hover{background:var(--accent);color:var(--accentFg)}
+.btn-danger{background:transparent;color:var(--danger);border:1.5px solid var(--danger)}
+.btn-danger:hover{background:var(--danger);color:#fff}
+.btn-sm{padding:.24rem .55rem;font-size:.73rem}
+.btn-warn{background:transparent;color:var(--warn);border:1.5px solid var(--warn)}
+.btn-warn:hover{background:var(--warn);color:#000}
+
+/* ══════════════════════════════
+   АДАПТИВНЫЙ ДИЗАЙН (мобильный)
+══════════════════════════════ */
+@media (max-width: 600px){
+  .topbar{ padding:.4rem .7rem; gap:.3rem; }
+  .topbar img{ height:40px !important; }
+  .topbar .tb-btn{ display:none; }
+  .page{ padding:1rem .9rem; padding-bottom:70px; }
+  .hero{ margin-bottom:1.2rem; }
+  .hero h1{ font-size:1.5rem; }
+  .qcards{ gap:.5rem; }
+  .qcard{ flex:1 1 calc(50% - .25rem); min-width:0; padding:.75rem; }
+  .qcard-icon{ font-size:1.2rem; margin-bottom:.25rem; }
+  .qcard h3{ font-size:.82rem; }
+  .qcard p{ display:none; }
+  .qcards{ display:none !important; }
+  .lib-grid{ grid-template-columns:repeat(2,1fr) !important; gap:.55rem; }
+  .bk-acts{ opacity:1 !important; }
+  .mob-rb-nav{
+    display:flex !important;
+    position:fixed;bottom:0;left:0;right:0;
+    background:var(--bg2);border-top:1px solid var(--border);
+    z-index:300;padding:.3rem 0 calc(.3rem + env(safe-area-inset-bottom));
+  }
+  .mob-rb-btn{
+    flex:1;display:flex;flex-direction:column;align-items:center;
+    gap:.15rem;padding:.4rem .2rem;border:none;background:transparent;
+    color:var(--text3);font-size:.58rem;font-weight:600;cursor:pointer;transition:color .15s;
+  }
+  .mob-rb-btn .mni{ font-size:1.3rem;line-height:1; }
+  .mob-rb-btn.active{ color:var(--accent); }
+  .r-toc{ display:none; }
+  .r-toc.mob-show{
+    display:block;position:fixed;inset:0;z-index:250;
+    width:100% !important;min-width:0 !important;
+    padding:1rem 1rem 5rem;overflow-y:auto;
+  }
+  .bm-panel{ display:none; }
+  .bm-panel.mob-show{
+    display:block;position:fixed;inset:0;z-index:250;
+    width:100% !important;min-width:0 !important;
+    padding:1rem 1rem 5rem;overflow-y:auto;
+  }
+  .r-toolbar{ flex-wrap:wrap; gap:.3rem; padding:.4rem .6rem; }
+  .r-body{ padding:1.2rem 1rem; }
+  .e-side{
+    display:none !important;
+  }
+  .e-side.mob-show{
+    display:flex !important;position:fixed;inset:0;z-index:250;
+    width:100% !important;min-width:0 !important;overflow-y:auto;
+  }
+  .sett-page{ padding:1rem .9rem !important; max-width:100% !important; }
+  .th-grid{ grid-template-columns:repeat(3,1fr) !important; }
+}
+@media (min-width:601px) and (max-width:900px){
+  .lib-grid{ grid-template-columns:repeat(3,1fr) !important; }
+  .topbar img{ height:52px !important; }
+}
+.mob-rb-nav{ display:none; }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo" onclick="goHome()" style="display:flex;align-items:center;gap:.5rem"><img src="assets/RI.png" alt="RoBoosk" style="height:72px;width:auto;display:block"/><sup style="font-size:.6rem;font-weight:400;color:var(--text3);align-self:flex-end;padding-bottom:4px">v1.93</sup></div>
+  <div class="tb-gap"></div>
+  <button class="tb-btn tb-btn-ghost" onclick="goHome()">Главная</button>
+  <button class="tb-btn tb-btn-ghost" onclick="window.open('https://romskn.github.io/Roboosk-Library/','_blank')">🌐 Библиотека</button>
+  <button class="tb-btn tb-btn-outline" onclick="openUpload()">📂 Загрузить</button>
+  <button class="tb-btn tb-btn-prim" onclick="newBook()">✏ Создать</button>
+  <div class="vsep"></div>
+  <button class="icon-btn" onclick="goSettings()" title="Настройки">⚙</button>
+</header>
+
+<!-- МОБИЛЬНАЯ НАВИГАЦИЯ -->
+<nav class="mob-rb-nav">
+  <button class="mob-rb-btn active" id="mrb-home" onclick="goHome()">
+    <span class="mni">🏠</span>Главная
+  </button>
+  <button class="mob-rb-btn" id="mrb-upload" onclick="openUpload()">
+    <span class="mni">📂</span>Загрузить
+  </button>
+  <button class="mob-rb-btn" id="mrb-new" onclick="newBook()">
+    <span class="mni">✏️</span>Создать
+  </button>
+  <button class="mob-rb-btn" onclick="window.open('https://romskn.github.io/Roboosk-Library/','_blank')">
+    <span class="mni">🌐</span>Библиотека
+  </button>
+  <button class="mob-rb-btn" id="mrb-settings" onclick="goSettings()">
+    <span class="mni">⚙</span>Настройки
+  </button>
+</nav>
+
+<!-- HOME -->
+<div class="page show" id="page-home">
+  <div class="hero">
+    <h1>Читай. Пиши. <em>Твори.</em></h1>
+    <p>Создавайте книги и читайте загруженные — всё локально, без облака.</p>
+  </div>
+  <div class="qcards">
+    <div class="qcard" onclick="newBook()"><div class="qcard-icon">✏️</div><h3>Создать книгу</h3><p>С нуля — главы, якоря, обложка, EPUB/FB2</p></div>
+    <div class="qcard" onclick="openUpload()"><div class="qcard-icon">📂</div><h3>Загрузить</h3><p>TXT, RTF, DOCX, ODT, EPUB, FB2, HTML — с авто-декодированием</p></div>
+    <div class="qcard" onclick="window.open('https://romskn.github.io/Roboosk-Library/','_blank')"><div class="qcard-icon">🌐</div><h3>Онлайн библиотека</h3><p>Скачивайте книги и делитесь отзывами</p></div>
+    <div class="qcard" onclick="goSettings()"><div class="qcard-icon">⚙️</div><h3>Настройки</h3><p>Темы, экспорт/импорт библиотеки, параметры</p></div>
+  </div>
+  <div class="sec-hd">Библиотека <span class="sec-hd-cnt" id="lib-cnt"></span></div>
+  <div class="lib-grid" id="lib-grid"></div>
+  <div class="lib-empty" id="lib-empty" style="display:none"><div class="ei">📖</div><p>Библиотека пуста</p></div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page sett-page" id="page-settings">
+  <h1>⚙ Настройки</h1>
+  <p>Персонализация, резервные копии, информация о приложении</p>
+
+  <div class="scard">
+    <h2>🎨 Тема оформления</h2>
+    <div class="th-grid" id="th-grid"></div>
+  </div>
+
+  <div class="scard">
+    <h2>💾 Резервная копия библиотеки</h2>
+    <p style="font-size:.82rem;color:var(--text2);margin-bottom:.9rem;line-height:1.6">
+      Сохраните все книги, обложки, закладки и прогресс чтения в один файл. Загрузите его на другом устройстве или браузере — и библиотека восстановится полностью.
+    </p>
+    <div class="backup-btns">
+      <button class="btn btn-prim" onclick="exportLibrary()">⬇ Скачать backup.json</button>
+      <button class="btn btn-out" onclick="document.getElementById('backup-fi').click()">⬆ Загрузить backup.json</button>
+      <input id="backup-fi" type="file" accept=".json" style="display:none" onchange="importLibrary(event)"/>
+    </div>
+    <div class="err" id="backup-err"></div>
+  </div>
+
+  <div class="scard">
+    <h2>📖 Параметры чтения</h2>
+    <div class="trow">
+      <div class="trow-l"><div class="tl">Оглавление при открытии</div><div class="ts">Боковая панель в режиме чтения</div></div>
+      <label class="toggle"><input type="checkbox" id="tgl-toc" onchange="saveSetting('tocOpen',this.checked)"><div class="ttrack"><div class="tthumb"></div></div></label>
+    </div>
+    <div class="trow">
+      <div class="trow-l"><div class="tl">Автосохранение</div><div class="ts">Каждые 1.5 сек после изменений</div></div>
+      <label class="toggle"><input type="checkbox" id="tgl-as" onchange="saveSetting('autosave',this.checked)"><div class="ttrack"><div class="tthumb"></div></div></label>
+    </div>
+  </div>
+
+  <div class="scard">
+    <h2>ℹ О приложении</h2>
+    <div class="irow"><span>Приложение</span><strong>RoBoosk</strong></div>
+    <div class="irow"><span>Правообладатель</span><strong>Romsk</strong></div>
+    <div class="irow"><span>Версия</span><strong>1.93</strong></div>
+    <div class="irow"><span>Copyright</span><strong>© 2025 Romsk. Все права защищены.</strong></div>
+    <div class="irow"><span>Платформа</span><strong>HTML5 — без зависимостей, без интернета</strong></div>
+    <div class="irow"><span>Хранение</span><strong>Локально (localStorage)</strong></div>
+    <div class="irow"><span>Импорт</span><strong>TXT, RTF, DOCX, ODT, EPUB, FB2, HTML</strong></div>
+    <div class="irow"><span>Экспорт</span><strong>EPUB, HTML, FB2</strong></div>
+    <p style="margin-top:.8rem;font-size:.76rem;color:var(--text3);line-height:1.65">
+      RoBoosk — продукт компании Romsk. Ваши книги и тексты являются вашей интеллектуальной собственностью. Приложение не передаёт данные на серверы.
+    </p>
+  </div>
+</div>
+
+<!-- EDITOR -->
+<div class="editor-wrap" id="editor-wrap">
+  <div class="e-side">
+    <div class="e-sec">
+      <div class="cov-btn" onclick="document.getElementById('cov-fi').click()">
+        <div class="cov-btn-ov">📷 Сменить</div>
+        <div id="cov-ph">📷<br/><span style="font-size:.65rem">Обложка</span></div>
+        <img id="cov-img" style="display:none" alt=""/>
+        <input id="cov-fi" type="file" accept="image/*" style="display:none" onchange="onCoverChange(event)"/>
+      </div>
+    </div>
+    <div class="e-sec" style="display:flex;flex-direction:column;gap:.32rem">
+      <label class="flbl">Название</label>
+      <input class="fi" id="e-title" placeholder="Название книги" oninput="scheduleSave()"/>
+      <label class="flbl" style="margin-top:.15rem">Автор</label>
+      <input class="fi" id="e-author" placeholder="Автор" oninput="scheduleSave()"/>
+      <label class="flbl" style="margin-top:.15rem">Описание</label>
+      <textarea class="fta" id="e-desc" rows="2" placeholder="Аннотация..." oninput="scheduleSave()"></textarea>
+    </div>
+    <div style="padding:.45rem .7rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+      <span class="flbl" style="margin:0">Главы</span>
+      <button class="btn btn-sm btn-out" onclick="openAddCh()">+ Глава</button>
+    </div>
+    <div class="ch-list" id="ch-list"></div>
+    <div style="padding:.65rem .7rem;border-top:1px solid var(--border)">
+      <div class="wc" id="wc">✍ 0 слов</div>
+      <div class="exp-wrap">
+        <button class="btn btn-prim" style="width:100%;justify-content:center" onclick="toggleExpDrop()">⬇ Экспорт ▾</button>
+        <div class="exp-drop" id="exp-drop">
+          <div class="exp-item" onclick="doExportEpub()">Скачать EPUB</div>
+          <div class="exp-item" onclick="doExportFb2()">📖 Скачать FB2</div>
+          <div class="exp-item" onclick="doExportHtml()">🌐 Скачать HTML</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="e-main">
+    <div class="e-toolbar">
+      <button class="btn btn-ghost btn-sm" onclick="goHome()">← Библиотека</button>
+      <div class="vsep"></div>
+      <input class="ch-title-fi" id="ch-title-fi" placeholder="Название главы..." oninput="onChTitleInput()"/>
+      <div class="as-badge" id="as-badge">✓ Сохранено</div>
+    </div>
+    <div class="anch-bar" id="anch-bar"></div>
+    <div class="draft-bar" id="draft-bar">
+      <span>📋 Черновик — создайте главы через <b>+ Глава</b> и перенесите текст.</span>
+      <button class="btn btn-sm btn-out" onclick="openAddCh()" style="flex-shrink:0">+ Первая глава</button>
+    </div>
+    <div class="e-body">
+      <textarea class="ch-ta" id="ch-ta" placeholder="Начните писать..." oninput="scheduleSave()"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- READER -->
+<div class="reader-wrap" id="reader-wrap">
+  <div class="r-prog"><div class="r-prog-fill" id="r-prog-fill" style="width:0%"></div></div>
+  <div class="r-toolbar">
+    <button class="btn btn-ghost btn-sm" onclick="goHome()">← Библиотека</button>
+    <div class="vsep"></div>
+    <button class="icon-btn" title="Оглавление" onclick="toggleToc()">📑</button>
+    <button class="icon-btn" title="Добавить закладку" onclick="addBm()">🔖</button>
+    <button class="icon-btn" title="Закладки" onclick="toggleBmPanel()">📌</button>
+    <button class="icon-btn" title="Поиск" onclick="toggleSearch()"></button>
+    <button class="icon-btn" id="r-tts-btn" title="Озвучить главу" onclick="toggleReaderTTS()" style="font-size:.8rem">🔊</button>
+    <div class="srch-bar" id="srch-bar" style="display:none">
+      <input id="srch-inp" placeholder="Поиск..." oninput="doSearch()" onkeydown="if(event.key==='Escape')closeSearch()"/>
+      <button class="icon-btn" style="font-size:.68rem" onclick="closeSearch()">✕</button>
+    </div>
+    <div class="vsep"></div>
+    <div class="fs-ctrl">
+      <span style="font-size:.75rem;color:var(--text2)">А</span>
+      <button class="fs-b" onclick="changeFontSize(-2)">−</button>
+      <span class="fs-val" id="fs-val">16</span>
+      <button class="fs-b" onclick="changeFontSize(2)">+</button>
+      <span style="font-size:.9rem;color:var(--text2)">А</span>
+    </div>
+    <div style="margin-left:auto;font-size:.68rem;color:var(--text3)" id="r-pct">0%</div>
+  </div>
+  <div class="r-main">
+    <div class="r-toc" id="r-toc">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
+        <h3 style="margin-bottom:0">Оглавление</h3>
+        <button onclick="closeToc()" style="background:transparent;border:none;color:var(--text2);font-size:1.1rem;cursor:pointer;padding:.2rem .4rem;border-radius:4px;line-height:1" title="Закрыть">✕</button>
+      </div>
+      <div id="toc-items"></div>
+    </div>
+    <div class="r-body" id="r-body" onscroll="onRScroll()">
+      <div class="r-content" id="r-content"></div>
+    </div>
+    <div class="bm-panel" id="bm-panel" style="display:none">
+      <h3>Закладки</h3>
+      <div id="bm-list"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- #app -->
+
+<!-- MODAL: Add Chapter -->
+<div class="mbd" id="m-addch">
+  <div class="modal" style="max-width:440px">
+    <h2>Новая глава</h2>
+    <div class="fg">
+      <label>Название главы</label>
+      <input class="fi" id="m-ch-title" placeholder="Глава N" onkeydown="if(event.key==='Enter')confirmAddCh()"/>
+    </div>
+    <div class="fg">
+      <label>Якорь — ключевое слово из текста (необязательно)</label>
+      <input class="fi" id="m-ch-anchor" placeholder="Напр.: Он вошёл в комнату"/>
+      <div class="hint">При нажатии на главу в режиме чтения — переход к этому месту в тексте.</div>
+    </div>
+    <div class="m-actions">
+      <button class="btn btn-ghost" onclick="closeM('m-addch')">Отмена</button>
+      <button class="btn btn-prim" onclick="confirmAddCh()">Добавить</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Upload Book -->
+<div class="mbd" id="m-upload">
+  <div class="modal" style="max-width:500px">
+    <h2>Загрузить книгу</h2>
+    <div id="up-step1">
+      <div class="dz" id="dz" onclick="document.getElementById('up-fi').click()"
+           ondragover="event.preventDefault();this.classList.add('over')"
+           ondragleave="this.classList.remove('over')"
+           ondrop="onDrop(event)">
+        <div class="dz-icon">📂</div>
+        <div style="font-weight:700;margin-bottom:.3rem">Перетащите или нажмите</div>
+        <div style="font-size:.74rem;opacity:.7">TXT, RTF, DOCX, ODT, EPUB, FB2, HTML</div>
+      </div>
+      <div class="err" id="up-err"></div>
+      <input id="up-fi" type="file" accept=".txt,.rtf,.docx,.odt,.epub,.fb2,.html,.htm" style="display:none" onchange="onFileSelect(event)"/>
+      <div class="m-actions"><button class="btn btn-ghost" onclick="closeM('m-upload')">Отмена</button></div>
+    </div>
+    <div id="up-step2" style="display:none">
+      <div class="imp-meta">
+        <div class="imp-cov">
+          <div class="cov-btn" onclick="document.getElementById('imp-cov-fi').click()">
+            <div class="cov-btn-ov">📷</div>
+            <div id="imp-cov-ph">📷<br/><span style="font-size:.65rem">Обложка</span></div>
+            <img id="imp-cov-img" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt=""/>
+            <input id="imp-cov-fi" type="file" accept="image/*" style="display:none" onchange="onImpCover(event)"/>
+          </div>
+        </div>
+        <div style="flex:1">
+          <div class="fg"><label>Название</label><input class="fi" id="imp-title"/></div>
+          <div class="fg"><label>Автор</label><input class="fi" id="imp-author"/></div>
+          <div class="fg"><label>Описание</label><textarea class="fta" id="imp-desc" rows="3"></textarea></div>
+        </div>
+      </div>
+      <div class="m-actions">
+        <button class="btn btn-ghost" onclick="backToStep1()">← Назад</button>
+        <button class="btn btn-prim" onclick="confirmImport()">Добавить в библиотеку</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Delete -->
+<div class="mbd" id="m-del">
+  <div class="modal" style="max-width:380px">
+    <h2>Удалить книгу?</h2>
+    <p style="color:var(--text2);font-size:.87rem">Это нельзя отменить.</p>
+    <div class="m-actions">
+      <button class="btn btn-ghost" onclick="closeM('m-del')">Отмена</button>
+      <button class="btn btn-danger" onclick="confirmDel()">🗑 Удалить</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+// ═══════════════════════════════════════
+// CONSTANTS & STATE
+// ═══════════════════════════════════════
+const LS = {LIB:'rb_lib2',BM:'rb_bm2',PROG:'rb_prog2',THEME:'rb_theme2',SETT:'rb_sett2'};
+
+const THEMES = [
+  {k:'forest',  n:'🌲 Лесная',    c:'',          dot:['#5cbe7c','#141d17']},
+  {k:'midnight',n:'🌑 Полночь',   c:'th-midnight',dot:['#7c6af7','#13131a']},
+  {k:'ocean',   n:'🌊 Океан',     c:'th-ocean',   dot:['#38bdf8','#0c1828']},
+  {k:'rose',    n:'🌸 Розовая',   c:'th-rose',    dot:['#f472b6','#24131a']},
+  {k:'parch',   n:'📜 Пергамент', c:'th-parch',   dot:['#8b5e3c','#f5f0e8']},
+  {k:'slate',   n:'🪨 Серая',     c:'th-slate',   dot:['#5865f2','#e8eaed']},
+];
+
+let library   = lsGet(LS.LIB, []);
+let bookmarks = lsGet(LS.BM, {});
+let readProg  = lsGet(LS.PROG, {});
+let settings  = lsGet(LS.SETT, {tocOpen:true, autosave:true});
+let themeKey  = lsGet(LS.THEME, 'forest');
+
+let curBook    = null;
+let curChId    = null;
+let delTarget  = null;
+let impPending = null;
+let saveTimer  = null;
+let rFontSize  = 16;
+let tocVisible = true;
+let bmVisible  = false;
+
+// ═══════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════
+function lsGet(k, def){ try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):def;}catch{return def;} }
+function lsSet(k, v){ try{localStorage.setItem(k,JSON.stringify(v));}catch{} }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2); }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function xmlE(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;'); }
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function(){
+  applyTheme(themeKey);
+  buildThemeGrid();
+  loadSettingsUI();
+  renderLib();
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.exp-wrap')) closeExpDrop();
+  });
+  document.querySelectorAll('.mbd').forEach(bd=>{
+    bd.addEventListener('click', function(e){ if(e.target===bd) bd.classList.remove('open'); });
+  });
+  // ── Handle import from Roboosk Library via URL params ──
+  checkUrlImport();
+});
+
+// ═══════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════
+function showOnly(pageId, wrapId){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('show'));
+  document.getElementById('editor-wrap').classList.remove('show');
+  document.getElementById('reader-wrap').classList.remove('show');
+  if(pageId) document.getElementById(pageId).classList.add('show');
+  if(wrapId) document.getElementById(wrapId).classList.add('show');
+}
+function setMobActive(id){
+  document.querySelectorAll('.mob-rb-btn').forEach(b=>b.classList.remove('active'));
+  const btn=document.getElementById(id);
+  if(btn) btn.classList.add('active');
+}
+function goHome(){ showOnly('page-home'); renderLib(); setMobActive('mrb-home'); }
+function goSettings(){ showOnly('page-settings'); setMobActive('mrb-settings'); }
+
+// ═══════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════
+function applyTheme(k){
+  themeKey = k;
+  THEMES.forEach(t=>{ if(t.c) document.body.classList.remove(t.c); });
+  const t = THEMES.find(t=>t.k===k);
+  if(t && t.c) document.body.classList.add(t.c);
+  lsSet(LS.THEME, k);
+  document.querySelectorAll('.th-btn').forEach(b=>b.classList.toggle('sel', b.dataset.k===k));
+}
+function buildThemeGrid(){
+  const g = document.getElementById('th-grid');
+  g.innerHTML = THEMES.map(t=>`
+    <button class="th-btn ${t.k===themeKey?'sel':''}" data-k="${t.k}" onclick="applyTheme('${t.k}')">
+      <div class="th-dot" style="background:linear-gradient(135deg,${t.dot[0]},${t.dot[1]})"></div>
+      <span>${t.n}</span>
+    </button>`).join('');
+}
+
+// ═══════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════
+function loadSettingsUI(){
+  document.getElementById('tgl-toc').checked = settings.tocOpen !== false;
+  document.getElementById('tgl-as').checked  = settings.autosave !== false;
+}
+function saveSetting(k,v){ settings[k]=v; lsSet(LS.SETT,settings); }
+
+// ═══════════════════════════════════════
+// LIBRARY BACKUP — EXPORT / IMPORT
+// ═══════════════════════════════════════
+function exportLibrary(){
+  const data = {
+    version: '1.35',
+    exported: new Date().toISOString(),
+    library:  library,
+    bookmarks: bookmarks,
+    readProg:  readProg,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'roboosk-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
+}
+
+function importLibrary(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const err = document.getElementById('backup-err');
+  err.style.display='none';
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try{
+      const data = JSON.parse(ev.target.result);
+      if(!data.library || !Array.isArray(data.library)) throw new Error('Файл не является резервной копией RoBoosk');
+      const existing = library.length;
+      // Merge: add books that don't exist yet (by id)
+      const existingIds = new Set(library.map(b=>b.id));
+      let added = 0;
+      for(const book of data.library){
+        if(!existingIds.has(book.id)){
+          library.push(book);
+          added++;
+        }
+      }
+      // Merge bookmarks and progress
+      if(data.bookmarks) Object.assign(bookmarks, data.bookmarks);
+      if(data.readProg)  Object.assign(readProg,  data.readProg);
+      lsSet(LS.LIB, library);
+      lsSet(LS.BM,  bookmarks);
+      lsSet(LS.PROG, readProg);
+      alert(`✅ Готово!\nДобавлено книг: ${added}\nВсего в библиотеке: ${library.length}`);
+      renderLib();
+    } catch(ex){
+      err.textContent = 'Ошибка: ' + ex.message;
+      err.style.display = 'block';
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ═══════════════════════════════════════
+// LIBRARY RENDER
+// ═══════════════════════════════════════
+function renderLib(){
+  const sorted = [...library].sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  const grid  = document.getElementById('lib-grid');
+  const empty = document.getElementById('lib-empty');
+  const cnt   = document.getElementById('lib-cnt');
+  cnt.textContent = sorted.length ? '('+sorted.length+')' : '';
+  if(!sorted.length){ grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  grid.innerHTML = sorted.map(b=>{
+    const chs = (b.chapters||[]).length || (b.rawText?1:0);
+    const cover = b.cover
+      ? '<img src="'+esc(b.cover)+'" alt=""/>'
+      : '<div class="bk-ph"><div class="bk-ph-icon">📖</div><div class="bk-ph-title">'+esc(b.title||'Без названия')+'</div></div>';
+    return `<div class="bk" onclick="openBook('${b.id}','reader')">
+      <div class="bk-cover">${cover}</div>
+      <div class="bk-acts">
+        <button class="icon-btn" title="Редактировать" onclick="event.stopPropagation();openBook('${b.id}','editor')">✏</button>
+        <button class="icon-btn" style="color:var(--danger)" title="Удалить" onclick="event.stopPropagation();askDel('${b.id}')">🗑</button>
+      </div>
+      <div class="bk-info">
+        <div class="bk-title">${esc(b.title||'Без названия')}</div>
+        <div class="bk-author">${esc(b.author||'Автор не указан')}</div>
+        <div class="bk-badge">${chs} ${chs===1?'гл.':'гл.'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════
+// BOOK CRUD
+// ═══════════════════════════════════════
+function newBook(){
+  const b = {id:uid(),title:'',author:'',description:'',cover:null,
+    chapters:[{id:uid(),title:'Глава 1',anchor:'',content:''}],
+    rawText:'',createdAt:Date.now(),updatedAt:Date.now()};
+  library.push(b); lsSet(LS.LIB,library);
+  openBook(b.id,'editor');
+}
+function openBook(id, mode){
+  const b = library.find(b=>b.id===id);
+  if(!b) return;
+  curBook = b;
+  if(mode==='editor'){ loadEditor(b); showOnly(null,'editor-wrap'); }
+  else               { loadReader(b); showOnly(null,'reader-wrap'); }
+}
+function saveBook(){
+  if(!curBook) return;
+  curBook.updatedAt = Date.now();
+  const i = library.findIndex(b=>b.id===curBook.id);
+  if(i>=0) library[i] = curBook;
+  lsSet(LS.LIB,library);
+  setBadge('saved');
+}
+function collectEditor(){
+  if(!curBook) return;
+  curBook.title       = document.getElementById('e-title').value;
+  curBook.author      = document.getElementById('e-author').value;
+  curBook.description = document.getElementById('e-desc').value;
+  if(curChId){
+    const ch = curBook.chapters.find(c=>c.id===curChId);
+    if(ch){ ch.title=document.getElementById('ch-title-fi').value; ch.content=document.getElementById('ch-ta').value; }
+  }
+  updateWC();
+}
+function scheduleSave(){
+  if(!curBook) return;
+  collectEditor(); setBadge('saving');
+  if(settings.autosave===false){ saveBook(); return; }
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveBook, 1500);
+}
+function setBadge(s){
+  const el = document.getElementById('as-badge');
+  if(s==='saving'){ el.textContent='● Сохранение...'; el.className='as-badge saving'; }
+  else            { el.textContent='✓ Сохранено';     el.className='as-badge saved';  }
+}
+function updateWC(){
+  const total = (curBook?.chapters||[]).reduce((n,c)=>n+(c.content?.trim().split(/\s+/).filter(Boolean).length||0),0);
+  const raw = curBook?.rawText ? (curBook.rawText.trim().split(/\s+/).filter(Boolean).length||0) : 0;
+  document.getElementById('wc').textContent = '✍ '+(total+raw).toLocaleString('ru')+' слов';
+}
+
+// DELETE
+function askDel(id){ delTarget=id; openM('m-del'); }
+function confirmDel(){
+  library=library.filter(b=>b.id!==delTarget);
+  lsSet(LS.LIB,library); closeM('m-del'); renderLib();
+}
+
+// ═══════════════════════════════════════
+// EDITOR
+// ═══════════════════════════════════════
+function loadEditor(b){
+  document.getElementById('e-title').value  = b.title||'';
+  document.getElementById('e-author').value = b.author||'';
+  document.getElementById('e-desc').value   = b.description||'';
+  const img=document.getElementById('cov-img'), ph=document.getElementById('cov-ph');
+  if(b.cover){ img.src=b.cover; img.style.display='block'; ph.style.display='none'; }
+  else       { img.style.display='none'; ph.style.display=''; }
+  if(b.chapters?.length){
+    curChId = b.chapters[0].id;
+    hideDraft(); renderChList(); loadCh(curChId);
+  } else if(b.rawText){
+    curChId = null; showDraft(b.rawText); renderChList();
+  }
+  updateWC(); setBadge('saved'); closeExpDrop();
+}
+function renderChList(){
+  const list = document.getElementById('ch-list');
+  list.innerHTML = (curBook?.chapters||[]).map((ch,i)=>`
+    <div class="ch-item ${ch.id===curChId?'act':''}" onclick="switchCh('${ch.id}')">
+      <span class="ch-num">${i+1}</span>
+      <div class="ch-info">
+        <div class="ch-name">${esc(ch.title||'Без названия')}</div>
+        ${ch.anchor?`<div class="ch-anc">🔗 «${esc(ch.anchor)}»</div>`:''}
+      </div>
+      ${curBook.chapters.length>1?`<button class="icon-btn ch-del" style="font-size:.68rem" onclick="event.stopPropagation();delCh('${ch.id}')">🗑</button>`:''}
+    </div>`).join('');
+}
+function loadCh(id){
+  const ch = curBook?.chapters.find(c=>c.id===id);
+  if(!ch) return;
+  curChId = id;
+  document.getElementById('ch-title-fi').value = ch.title||'';
+  document.getElementById('ch-ta').value = ch.content||'';
+  const ab=document.getElementById('anch-bar');
+  if(ch.anchor){ ab.style.display='block'; ab.innerHTML='🔗 Якорь: <strong>«'+esc(ch.anchor)+'»</strong>'; }
+  else         { ab.style.display='none'; }
+  renderChList();
+}
+function switchCh(id){
+  if(curChId && curBook){
+    const ch=curBook.chapters.find(c=>c.id===curChId);
+    if(ch){ ch.title=document.getElementById('ch-title-fi').value; ch.content=document.getElementById('ch-ta').value; }
+  }
+  hideDraft(); loadCh(id);
+}
+function onChTitleInput(){
+  if(!curChId||!curBook) return;
+  const ch=curBook.chapters.find(c=>c.id===curChId);
+  if(ch) ch.title=document.getElementById('ch-title-fi').value;
+  renderChList(); scheduleSave();
+}
+function showDraft(txt){
+  document.getElementById('draft-bar').style.display='flex';
+  document.getElementById('ch-title-fi').value='Черновик';
+  document.getElementById('ch-ta').value=txt||'';
+  document.getElementById('anch-bar').style.display='none';
+}
+function hideDraft(){ document.getElementById('draft-bar').style.display='none'; }
+function openAddCh(){
+  document.getElementById('m-ch-title').value='';
+  document.getElementById('m-ch-anchor').value='';
+  openM('m-addch');
+  setTimeout(()=>document.getElementById('m-ch-title').focus(),50);
+}
+function confirmAddCh(){
+  const title=document.getElementById('m-ch-title').value.trim();
+  const anchor=document.getElementById('m-ch-anchor').value.trim();
+  if(!title) return;
+  collectEditor();
+  const ch={id:uid(),title,anchor,content:''};
+  if(!curBook.chapters) curBook.chapters=[];
+  curBook.chapters.push(ch);
+  curChId=ch.id; hideDraft(); renderChList(); loadCh(ch.id);
+  closeM('m-addch'); scheduleSave();
+}
+function delCh(id){
+  if(!curBook||curBook.chapters.length<=1) return;
+  collectEditor();
+  curBook.chapters=curBook.chapters.filter(c=>c.id!==id);
+  if(curChId===id){ curChId=curBook.chapters[0].id; loadCh(curChId); }
+  else renderChList();
+  scheduleSave();
+}
+function onCoverChange(e){
+  const file=e.target.files[0]; if(!file) return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    if(!curBook) return;
+    curBook.cover=ev.target.result;
+    const img=document.getElementById('cov-img'), ph=document.getElementById('cov-ph');
+    img.src=ev.target.result; img.style.display='block'; ph.style.display='none';
+    scheduleSave();
+  };
+  r.readAsDataURL(file);
+}
+function toggleExpDrop(){ document.getElementById('exp-drop').classList.toggle('open'); }
+function closeExpDrop()  { document.getElementById('exp-drop').classList.remove('open'); }
+
+// ═══════════════════════════════════════
+// UPLOAD / IMPORT
+// ═══════════════════════════════════════
+function openUpload(){ backToStep1(); openM('m-upload'); }
+function backToStep1(){
+  document.getElementById('up-step1').style.display='block';
+  document.getElementById('up-step2').style.display='none';
+  document.getElementById('up-err').style.display='none';
+  document.getElementById('up-err').textContent='';
+}
+function onDrop(e){
+  e.preventDefault(); document.getElementById('dz').classList.remove('over');
+  processFile(e.dataTransfer.files[0]);
+}
+function onFileSelect(e){ processFile(e.target.files[0]); }
+
+// ── Import book from Roboosk Library via URL params ──
+// Called when RoBoosk opens with ?import=fileUrl&title=...&author=...&cover=...
+async function checkUrlImport(){
+  // Primary: check localStorage for book passed from Roboosk Library
+  const stored = localStorage.getItem('roboosk_import');
+  if(stored){
+    localStorage.removeItem('roboosk_import'); // consume immediately
+    try{
+      const bookData = JSON.parse(stored);
+      showBanner(`⏳ Загрузка «${esc(bookData.title||'книги')}»...`);
+
+      let rawText = '';
+      let cover = bookData.cover || null;
+
+      // Try to fetch the actual file content
+      if(bookData.fileUrl){
+        try{
+          const resp = await fetch(bookData.fileUrl, {mode:'cors'});
+          if(resp.ok){
+            const buf = await resp.arrayBuffer();
+            const ext = (bookData.fileName||'').split('.').pop().toLowerCase();
+            let meta;
+            if(ext==='epub')       meta = await decodeEpub(buf);
+            else if(ext==='fb2'){  const s=new TextDecoder('utf-8').decode(buf); meta=decodeFb2(s); }
+            else if(ext==='docx')  meta = await decodeDocx(buf);
+            else if(ext==='odt')   meta = await decodeOdt(buf);
+            else if(ext==='rtf'){  let s; try{s=new TextDecoder('utf-8',{fatal:true}).decode(buf);}catch{s=new TextDecoder('windows-1251').decode(buf);} meta={text:decodeRtf(s)}; }
+            else if(ext==='html'||ext==='htm'){ meta={text:decodeHtml(new TextDecoder('utf-8',{fatal:false}).decode(buf))}; }
+            else                   meta = {text: new TextDecoder('utf-8',{fatal:false}).decode(buf)};
+            rawText = meta.text || '';
+            if(meta.cover) cover = meta.cover;
+            if(!cover && bookData.cover) cover = bookData.cover;
+          }
+        } catch(fetchErr){
+          // CORS blocked or network error — store URL as reference
+          rawText = `[Файл: ${bookData.fileName||'book'}]\n\nСсылка: ${bookData.fileUrl}\n\nОткройте ссылку в браузере чтобы скачать файл.`;
+        }
+      }
+
+      const book = {
+        id: uid(),
+        title:       bookData.title  || 'Без названия',
+        author:      bookData.author || '',
+        description: bookData.description || '',
+        cover:       cover,
+        chapters:    [],
+        rawText:     rawText,
+        fileUrl:     bookData.fileUrl || null,
+        createdAt:   Date.now(),
+        updatedAt:   Date.now()
+      };
+      library.push(book);
+      lsSet(LS.LIB, library);
+      renderLib();
+      showBanner(`✅ «${esc(book.title)}» добавлена в библиотеку!`, true);
+      return;
+    } catch(ex){
+      showBanner('❌ Ошибка импорта: '+ex.message, false, true);
+      return;
+    }
+  }
+
+  // Fallback: check URL params (old method)
+  const params = new URLSearchParams(window.location.search);
+  const importUrl = params.get('import');
+  if(!importUrl) return;
+  history.replaceState({}, '', window.location.pathname);
+  showBanner('⏳ Загрузка из библиотеки...');
+  try{
+    const resp = await fetch(importUrl, {mode:'cors'});
+    if(!resp.ok) throw new Error('HTTP '+resp.status+' (возможно CORS)');
+    const buf = await resp.arrayBuffer();
+    const filename = params.get('filename')||'book.epub';
+    const ext = filename.split('.').pop().toLowerCase();
+    let meta;
+    if(ext==='epub')      meta = await decodeEpub(buf);
+    else if(ext==='fb2'){ const s=new TextDecoder('utf-8').decode(buf); meta=decodeFb2(s); }
+    else if(ext==='docx') meta = await decodeDocx(buf);
+    else if(ext==='odt')  meta = await decodeOdt(buf);
+    else                  meta = {text: new TextDecoder('utf-8',{fatal:false}).decode(buf)};
+    let cover = meta.cover || null;
+    if(!cover && params.get('cover')){
+      try{ const cr=await fetch(params.get('cover')); if(cr.ok){ const cb=await cr.blob(); cover=await new Promise(r=>{const fr=new FileReader();fr.onload=e=>r(e.target.result);fr.readAsDataURL(cb);}); }}catch{}
+    }
+    const book = {id:uid(), title:meta.title||params.get('title')||'Книга', author:meta.author||params.get('author')||'', description:meta.description||'', cover, chapters:[], rawText:meta.text||'', createdAt:Date.now(), updatedAt:Date.now()};
+    library.push(book); lsSet(LS.LIB,library); renderLib();
+    showBanner(`✅ «${esc(book.title)}» добавлена!`, true);
+  } catch(ex){
+    showBanner('❌ Ошибка: '+ex.message+'. Попробуйте скачать вручную.', false, true);
+  }
+}
+
+function showBanner(html, success=false, error=false){
+  // Remove existing banner
+  document.querySelectorAll('.import-banner').forEach(b=>b.remove());
+  const banner = document.createElement('div');
+  banner.className = 'import-banner';
+  banner.style.cssText = `position:fixed;top:62px;left:50%;transform:translateX(-50%);
+    background:var(--bg2);border:1px solid ${error?'var(--danger)':success?'var(--accent)':'var(--border)'};
+    border-radius:var(--r);padding:.75rem 1.2rem;z-index:999;font-size:.85rem;
+    box-shadow:var(--shadow);max-width:380px;text-align:center;white-space:nowrap`;
+  banner.innerHTML = html;
+  document.body.appendChild(banner);
+  if(success || error) setTimeout(()=>banner.remove(), 4000);
+}
+
+function processFile(file){
+  if(!file) return;
+  const ext=file.name.split('.').pop().toLowerCase();
+  const baseName=file.name.replace(/\.[^.]+$/,'');
+  const r=new FileReader();
+  r.onload=async ev=>{
+    try{
+      // Each decoder returns {text, title?, author?, cover?}
+      let meta;
+      if(ext==='epub')        meta=await decodeEpub(ev.target.result);
+      else if(ext==='docx')   meta=await decodeDocx(ev.target.result);
+      else if(ext==='odt')    meta=await decodeOdt(ev.target.result);
+      else if(ext==='fb2')    meta=decodeFb2(decodeSync(ev.target.result,'fb2_raw'));
+      else if(ext==='html'||ext==='htm') meta=decodeHtml(decodeSync(ev.target.result,'txt'));
+      else                    meta={text:decodeSync(ev.target.result,ext)};
+
+      const title       = meta.title       || baseName;
+      const author      = meta.author      || '';
+      const description = meta.description || '';
+      const cover       = meta.cover       || null;
+
+      impPending={id:uid(),title,author,description,cover,
+        chapters:[],rawText:meta.text||'',createdAt:Date.now(),updatedAt:Date.now()};
+
+      document.getElementById('imp-title').value  = title;
+      document.getElementById('imp-author').value = author;
+      document.getElementById('imp-desc').value   = description;
+
+      const img=document.getElementById('imp-cov-img');
+      const ph =document.getElementById('imp-cov-ph');
+      if(cover){ img.src=cover; img.style.display='block'; ph.style.display='none'; }
+      else      { img.style.display='none'; ph.style.display=''; }
+
+      document.getElementById('up-step1').style.display='none';
+      document.getElementById('up-step2').style.display='block';
+    } catch(ex){
+      const eb=document.getElementById('up-err');
+      eb.textContent='Ошибка: '+ex.message; eb.style.display='block';
+    }
+  };
+  r.onerror=()=>{ const eb=document.getElementById('up-err'); eb.textContent='Ошибка чтения файла'; eb.style.display='block'; };
+  r.readAsArrayBuffer(file);
+}
+function onImpCover(e){
+  const file=e.target.files[0]; if(!file) return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    if(!impPending) return;
+    impPending.cover=ev.target.result;
+    const img=document.getElementById('imp-cov-img');
+    img.src=ev.target.result; img.style.display='block';
+    document.getElementById('imp-cov-ph').style.display='none';
+  };
+  r.readAsDataURL(file);
+}
+function confirmImport(){
+  if(!impPending) return;
+  impPending.title       = document.getElementById('imp-title').value;
+  impPending.author      = document.getElementById('imp-author').value;
+  impPending.description = document.getElementById('imp-desc').value;
+  library.push(impPending); lsSet(LS.LIB,library);
+  closeM('m-upload'); renderLib(); impPending=null;
+}
+
+// ═══════════════════════════════════════
+// FILE DECODERS
+// ═══════════════════════════════════════
+const W1251=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,1026,1027,8218,1107,8222,8230,8224,8225,8364,8240,1033,8249,1034,1036,1035,1039,1106,8216,8217,8220,8221,8226,8211,8212,8364,8482,1113,8250,1114,1116,1115,1119,160,1038,1118,1032,164,1168,166,167,1025,169,1028,171,172,173,174,1031,176,177,1030,1110,1169,181,182,183,1105,8470,1108,187,1109,1029,1111,1103,1040,1041,1042,1043,1044,1045,1046,1047,1048,1049,1050,1051,1052,1053,1054,1055,1056,1057,1058,1059,1060,1061,1062,1063,1064,1065,1066,1067,1068,1069,1070,1071,1072,1073,1074,1075,1076,1077,1078,1079,1080,1081,1082,1083,1084,1085,1086,1087,1088,1089,1090,1091,1092,1093,1094,1095,1096,1097,1098,1099,1100,1101,1102,1103];
+
+function decodeSync(buf, ext){
+  if(ext==='rtf'){
+    let s; try{s=new TextDecoder('utf-8',{fatal:true}).decode(buf);}catch{s=new TextDecoder('windows-1251').decode(buf);}
+    return decodeRtf(s);
+  }
+  // fb2_raw = raw text decode for fb2 (metadata extracted by decodeFb2)
+  if(ext==='fb2'||ext==='fb2_raw'){
+    let s; try{s=new TextDecoder('utf-8',{fatal:true}).decode(buf);}catch{s=new TextDecoder('windows-1251').decode(buf);}
+    return s; // raw XML string — decodeFb2() will parse it
+  }
+  try{return new TextDecoder('utf-8',{fatal:true}).decode(buf);}catch{return new TextDecoder('windows-1251').decode(buf);}
+}
+
+function decodeRtf(s){
+  if(!s.startsWith('{\\rtf')) return s;
+  s=s.replace(/\{\\(?:fonttbl|colortbl|stylesheet|info|pict|object)[\s\S]*?\}/g,'');
+  s=s.replace(/\{\\\*[^}]*\}/g,'');
+  s=s.replace(/\\'([0-9a-fA-F]{2})/g,(_,h)=>{const c=parseInt(h,16);return c>=128&&c<=255?String.fromCharCode(W1251[c]||c):String.fromCharCode(c);});
+  s=s.replace(/\\u(-?\d+)\??/g,(_,n)=>String.fromCharCode(parseInt(n)));
+  s=s.replace(/\\par\b/g,'\n').replace(/\\line\b/g,'\n').replace(/\\tab\b/g,'\t');
+  s=s.replace(/\\[a-zA-Z]+-?\d*\s?/g,'').replace(/[{}\\]/g,'');
+  return s.replace(/\n{3,}/g,'\n\n').trim();
+}
+
+// Returns {text, title, author, cover}
+function decodeFb2(xmlStr){
+  const getTag=(src,tag)=>{
+    const m=src.match(new RegExp('<'+tag+'[^>]*>([\\s\\S]*?)<\\/'+tag+'>','i'));
+    return m?m[1].replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'").trim():'';
+  };
+
+  // Title
+  const title=getTag(xmlStr,'book-title');
+
+  // Author
+  const aBlock=xmlStr.match(/<author>([\s\S]*?)<\/author>/i);
+  let author='';
+  if(aBlock){
+    const fn=getTag(aBlock[1],'first-name');
+    const ln=getTag(aBlock[1],'last-name');
+    const nn=getTag(aBlock[1],'nickname');
+    author=[fn,ln].filter(Boolean).join(' ')||nn;
+  }
+
+  // Description from <annotation>
+  const descBlock=xmlStr.match(/<annotation>([\s\S]*?)<\/annotation>/i);
+  const description=descBlock?getTag(descBlock[1],'p')||getTag(xmlStr,'annotation'):'';
+
+  // Cover image from binary
+  let cover=null;
+  const covHref=xmlStr.match(/<coverpage>[\s\S]*?<image[^>]*href=["']#([^"']+)["']/i)
+              ||xmlStr.match(/<coverpage>[\s\S]*?<image[^>]*l:href=["']#([^"']+)["']/i);
+  if(covHref){
+    const bid=covHref[1];
+    const re1=new RegExp('<binary[^>]+id=["\']'+bid+'["\'][^>]+content-type=["\']([^"\']+)["\'][^>]*>([\\s\\S]*?)<\\/binary>','i');
+    const re2=new RegExp('<binary[^>]+content-type=["\']([^"\']+)["\'][^>]+id=["\']'+bid+'["\'][^>]*>([\\s\\S]*?)<\\/binary>','i');
+    const bm=xmlStr.match(re1)||xmlStr.match(re2);
+    if(bm) cover='data:'+bm[1]+';base64,'+bm[2].replace(/\s/g,'');
+  }
+
+  // Extract text from body
+  let body=xmlStr.replace(/<binary[\s\S]*?<\/binary>/gi,'');
+  const bodyM=body.match(/<body>([\s\S]*?)<\/body>/i);
+  let text=bodyM?bodyM[1]:body;
+  text=text
+    .replace(/<title>([\s\S]*?)<\/title>/gi,'\n\n$1\n\n')
+    .replace(/<p>([\s\S]*?)<\/p>/gi,'$1\n')
+    .replace(/<section>/gi,'').replace(/<\/section>/gi,'\n')
+    .replace(/<empty-line\/>/gi,'\n').replace(/<[^>]+>/g,'')
+    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'")
+    .replace(/\n{3,}/g,'\n\n').trim();
+
+  return {text:text||'[⚠ FB2 пустой]', title, author, description, cover};
+}
+
+// Returns {text, title, author}
+function decodeHtml(htmlStr){
+  // Title from <title> tag
+  const titleM=htmlStr.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  const title=titleM?titleM[1].replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').trim():'';
+
+  // Author from meta tags: <meta name="author" content="...">
+  const authorM=htmlStr.match(/<meta[^>]*name=["']author["'][^>]*content=["']([^"']+)["']/i)
+               ||htmlStr.match(/<meta[^>]*content=["']([^"']+)["'][^>]*name=["']author["']/i);
+  const author=authorM?authorM[1].trim():'';
+
+  const text=html2text(htmlStr);
+  return {text, title, author, cover:null};
+}
+
+function html2text(html){
+  return html.replace(/<style[\s\S]*?<\/style>/gi,'').replace(/<script[\s\S]*?<\/script>/gi,'')
+    .replace(/<br\s*\/?>/gi,'\n').replace(/<\/p>/gi,'\n').replace(/<\/div>/gi,'\n')
+    .replace(/<\/h[1-6]>/gi,'\n\n').replace(/<[^>]+>/g,'')
+    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&nbsp;/g,' ').replace(/&apos;/g,"'")
+    .replace(/\n{3,}/g,'\n\n').trim();
+}
+
+// ── ZIP parser: reads Central Directory for reliable sizes (handles data descriptors)
+function zipBuildIndex(buf){
+  const v=new DataView(buf);
+  const bytes=new Uint8Array(buf);
+  const len=bytes.length;
+  const dec=new TextDecoder('utf-8');
+  // Find End-of-Central-Directory by scanning from end
+  let eocd=-1;
+  for(let i=len-22;i>=Math.max(0,len-65558);i--){
+    if(v.getUint32(i,true)===0x06054B50){eocd=i;break;}
+  }
+  if(eocd<0) return null;
+  const cdCount=v.getUint16(eocd+10,true);
+  const cdOffset=v.getUint32(eocd+16,true);
+  const index={};
+  let pos=cdOffset;
+  for(let n=0;n<cdCount;n++){
+    if(pos+46>len) break;
+    if(v.getUint32(pos,true)!==0x02014B50) break;
+    const comp=v.getUint16(pos+10,true);
+    const csz=v.getUint32(pos+20,true);
+    const usz=v.getUint32(pos+24,true);
+    const nl=v.getUint16(pos+28,true);
+    const el=v.getUint16(pos+30,true);
+    const cl=v.getUint16(pos+32,true);
+    const loff=v.getUint32(pos+42,true);
+    const name=dec.decode(bytes.slice(pos+46,pos+46+nl));
+    index[name]={comp,csz,usz,loff};
+    pos+=46+nl+el+cl;
+  }
+  return index;
+}
+
+async function zipDecompress(buf,entry){
+  const v=new DataView(buf);
+  const bytes=new Uint8Array(buf);
+  const lh=entry.loff;
+  const lnl=v.getUint16(lh+26,true);
+  const lel=v.getUint16(lh+28,true);
+  const start=lh+30+lnl+lel;
+  const {comp,csz,usz}=entry;
+  if(comp===0) return bytes.slice(start,start+usz);
+  if(comp===8&&typeof DecompressionStream!=='undefined'){
+    const raw=bytes.slice(start,start+csz);
+    // Try deflate-raw first, then deflate (zlib wrapper)
+    for(const fmt of ['deflate-raw','deflate']){
+      try{
+        const ds=new DecompressionStream(fmt);
+        const wr=ds.writable.getWriter();wr.write(raw);wr.close();
+        const chunks=[];const rd=ds.readable.getReader();
+        for(;;){const{done,value}=await rd.read();if(done)break;chunks.push(value);}
+        const tot=chunks.reduce((s,c)=>s+c.length,0);
+        const out=new Uint8Array(tot);let p=0;
+        for(const c of chunks){out.set(c,p);p+=c.length;}
+        return out;
+      }catch(_){}
+    }
+  }
+  return null;
+}
+
+function zipFind(index,name){
+  if(!index) return null;
+  if(name instanceof RegExp){
+    // prefer non-nav/toc files
+    const keys=Object.keys(index);
+    const pref=keys.filter(k=>name.test(k)&&!/(toc|nav|ncx)/i.test(k));
+    const all=keys.filter(k=>name.test(k));
+    const k=(pref[0]||all[0]);
+    return k?index[k]:null;
+  }
+  if(index[name]) return index[name];
+  for(const k of Object.keys(index)){
+    if(k===name||k.endsWith('/'+name)) return index[k];
+  }
+  return null;
+}
+
+async function zipExtract(buf,name){
+  const idx=zipBuildIndex(buf);
+  const e=zipFind(idx,name);
+  if(!e) return null;
+  const raw=await zipDecompress(buf,e);
+  if(!raw) return null;
+  try{return new TextDecoder('utf-8',{fatal:true}).decode(raw);}
+  catch{return new TextDecoder('windows-1251').decode(raw);}
+}
+
+async function zipExtractRaw(buf,name){
+  const idx=zipBuildIndex(buf);
+  const e=zipFind(idx,name);
+  if(!e) return null;
+  return await zipDecompress(buf,e);
+}
+
+
+// Returns {text} for DOCX (no metadata in standard DOCX body)
+async function decodeDocx(buf){
+  const xml=await zipExtract(buf,'word/document.xml');
+  if(!xml) return {text:'[⚠ Не удалось прочитать DOCX]'};
+  const text=xml.replace(/<w:br[^/]*/g,'\n').replace(/<\/w:p>/g,'\n')
+    .replace(/<w:t[^>]*>([^<]*)<\/w:t>/g,'$1').replace(/<[^>]+>/g,'')
+    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'")
+    .replace(/\n{3,}/g,'\n\n').trim()||'[⚠ DOCX пустой]';
+  return {text};
+}
+
+// Returns {text, title, author} for ODT (OpenDocument Text)
+async function decodeOdt(buf){
+  // ODT is a ZIP containing content.xml and meta.xml
+  const content = await zipExtract(buf, 'content.xml');
+  if(!content) return {text:'[⚠ Не удалось прочитать ODT]'};
+
+  // Extract text: text:p and text:h tags contain paragraphs
+  let text = content
+    .replace(/<text:line-break[^/]*/g, '\n')
+    .replace(/<\/text:h>/g, '\n\n')
+    .replace(/<\/text:p>/g, '\n')
+    .replace(/<text:tab[^/]*/g, '\t')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'")
+    .replace(/\n{3,}/g,'\n\n').trim();
+
+  // Try to extract metadata from meta.xml
+  let title = '', author = '';
+  const meta = await zipExtract(buf, 'meta.xml');
+  if(meta){
+    const tm = meta.match(/<dc:title[^>]*>([\s\S]*?)<\/dc:title>/i);
+    if(tm) title = tm[1].replace(/<[^>]+>/g,'').trim();
+    const am = meta.match(/<dc:creator[^>]*>([\s\S]*?)<\/dc:creator>/i)
+             || meta.match(/<meta:initial-creator[^>]*>([\s\S]*?)<\/meta:initial-creator>/i);
+    if(am) author = am[1].replace(/<[^>]+>/g,'').trim();
+  }
+
+  return {text: text||'[⚠ ODT пустой]', title, author};
+}
+
+// Returns {text, title, author, cover}
+async function decodeEpub(buf){
+  const container=await zipExtract(buf,'META-INF/container.xml');
+  let opfPath='OEBPS/content.opf';
+  if(container){const m=container.match(/full-path="([^"]+\.opf)"/);if(m)opfPath=m[1];}
+  const opfBase=opfPath.includes('/')?opfPath.substring(0,opfPath.lastIndexOf('/')+1):'';
+  const opf=await zipExtract(buf,opfPath);
+
+  // Metadata from OPF
+  let title='', author='', description='', cover=null;
+  if(opf){
+    // Title
+    const tm=opf.match(/<dc:title[^>]*>([\s\S]*?)<\/dc:title>/i);
+    if(tm) title=tm[1].trim();
+
+    // Author
+    const am=opf.match(/<dc:creator[^>]*>([\s\S]*?)<\/dc:creator>/i);
+    if(am) author=am[1].trim();
+
+    // Description
+    const dm=opf.match(/<dc:description[^>]*>([\s\S]*?)<\/dc:description>/i);
+    if(dm) description=dm[1].replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'").trim();
+
+    // Cover image: find cover item in manifest
+    // Try <meta name="cover" content="cover-id"/> first
+    const covIdM=opf.match(/<meta[^>]+name=["']cover["'][^>]+content=["']([^"']+)["']/i)
+                ||opf.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']cover["']/i);
+    let covHref=null;
+    if(covIdM){
+      const covItemM=opf.match(new RegExp('<item[^>]+id=["\']+'+covIdM[1]+'["\'][^>]+href=["\']+([^"\']+)["\']','i'))
+                    ||opf.match(new RegExp('<item[^>]+href=["\']+([^"\']+)["\'][^>]+id=["\']+'+covIdM[1]+'["\']','i'));
+      if(covItemM) covHref=covItemM[1];
+    }
+    // Fallback: look for item with id="cover" or href containing "cover"
+    if(!covHref){
+      const covFb=opf.match(/<item[^>]+id=["']cover(?:-image)?["'][^>]+href=["']([^"']+)["']/i)
+                 ||opf.match(/<item[^>]+href=["']([^"']*cover[^"']*\.(?:jpg|jpeg|png|gif|webp))["']/i);
+      if(covFb) covHref=covFb[1];
+    }
+    if(covHref){
+      const imgData=await zipExtractRaw(buf, opfBase+covHref) || await zipExtractRaw(buf, covHref);
+      if(imgData){
+        const ext2=covHref.split('.').pop().toLowerCase();
+        const mime=ext2==='png'?'image/png':ext2==='gif'?'image/gif':ext2==='webp'?'image/webp':'image/jpeg';
+        const b64=btoa(String.fromCharCode(...imgData));
+        cover='data:'+mime+';base64,'+b64;
+      }
+    }
+  }
+
+  // Extract text from spine
+  let text='';
+  if(opf){
+    const manifest={};
+    for(const m of opf.matchAll(/<item\s[^>]*id="([^"]+)"[^>]*href="([^"]+)"[^>]*/g)) manifest[m[1]]=m[2];
+    const texts=[];
+    for(const m of opf.matchAll(/<itemref\s[^>]*idref="([^"]+)"/g)){
+      const href=manifest[m[1]];
+      if(href){
+        const html=await zipExtract(buf,opfBase+href)||await zipExtract(buf,href);
+        if(html) texts.push(html2text(html));
+      }
+    }
+    if(texts.length) text=texts.join('\n\n').replace(/\n{3,}/g,'\n\n').trim();
+  }
+  if(!text){
+    const fb=await zipExtract(buf,/\.(html|xhtml)$/i);
+    if(fb) text=html2text(fb);
+  }
+
+  return {text:text||'[⚠ Не удалось прочитать EPUB]', title, author, description, cover};
+}
+
+// ═══════════════════════════════════════
+// READER
+// ═══════════════════════════════════════
+function loadReader(b){
+  tocVisible = settings.tocOpen !== false;
+  const content = document.getElementById('r-content');
+  const tocEl   = document.getElementById('r-toc');
+  let html='';
+  if(b.cover) html+=`<img class="r-cover" src="${esc(b.cover)}" alt=""/>`;
+  html+=`<div class="r-book-title">${esc(b.title||'Без названия')}</div>`;
+  html+=`<div class="r-meta">${b.author?'Автор: <strong>'+esc(b.author)+'</strong>':''}${b.description?'<br><em>'+esc(b.description)+'</em>':''}</div>`;
+
+  // If no chapters, show raw text
+  const chs = b.chapters||[];
+  if(chs.length){
+    chs.forEach((ch,i)=>{
+      html+=`<div id="cs-${i}">`;
+      html+=`<div class="r-ch-hd" id="ch-hd-${i}">${esc(ch.title||'Глава '+(i+1))}</div>`;
+      html+=`<div class="r-text" id="ct-${i}">${esc(ch.content||'')}</div>`;
+      html+=`</div>`;
+    });
+  } else if(b.rawText){
+    html+=`<div class="r-text">${esc(b.rawText)}</div>`;
+  }
+  content.innerHTML=html;
+  content.style.fontSize=rFontSize+'px';
+
+  // TOC
+  let tocHtml=`<div class="toc-i" onclick="rScrollTop()">▲ Начало</div>`;
+  chs.forEach((ch,i)=>{
+    tocHtml+=`<div class="toc-i" onclick="rJump(${i});if(window.innerWidth<=600)closeToc()">
+      <div>${i+1}. ${esc(ch.title||'Глава '+(i+1))}</div>
+      ${ch.anchor?`<div class="toc-i-anc">🔗 «${esc(ch.anchor)}»</div>`:''}
+    </div>`;
+  });
+  document.getElementById('toc-items').innerHTML=tocHtml;
+  tocEl.style.display = tocVisible ? 'block' : 'none';
+
+  // Restore scroll
+  const rbody=document.getElementById('r-body');
+  rbody.scrollTop=readProg[b.id]||0;
+
+  document.getElementById('bm-panel').style.display='none'; bmVisible=false;
+  document.getElementById('srch-bar').style.display='none';
+  document.getElementById('srch-inp').value='';
+}
+
+function rScrollTop(){ document.getElementById('r-body').scrollTo({top:0,behavior:'smooth'}); }
+
+function rJump(idx){
+  const b=curBook; if(!b) return;
+  const ch=(b.chapters||[])[idx]; if(!ch) return;
+  const rbody=document.getElementById('r-body');
+
+  if(ch.anchor && ch.anchor.trim()){
+    const textEl=document.getElementById('ct-'+idx);
+    if(textEl){
+      const walker=document.createTreeWalker(textEl,NodeFilter.SHOW_TEXT);
+      const needle=ch.anchor.toLowerCase();
+      let node;
+      while((node=walker.nextNode())){
+        const pos=node.textContent.toLowerCase().indexOf(needle);
+        if(pos>=0){
+          try{
+            // Insert temp marker
+            const range=document.createRange();
+            range.setStart(node,pos);
+            range.setEnd(node,Math.min(pos+ch.anchor.length,node.textContent.length));
+            const marker=document.createElement('span');
+            marker.id='__jmp__';
+            range.insertNode(marker);
+            // Get absolute offsetTop relative to r-body
+            let top=0, el=marker;
+            while(el && el!==rbody){ top+=el.offsetTop||0; el=el.offsetParent; }
+            // Cleanup marker
+            const parent=marker.parentNode;
+            if(parent){ parent.removeChild(marker); parent.normalize(); }
+            rbody.scrollTo({top:Math.max(0,top-80),behavior:'smooth'});
+            return;
+          } catch(_){}
+        }
+      }
+    }
+  }
+  // Fallback: section header
+  const sec=document.getElementById('cs-'+idx);
+  if(sec){
+    let top=0, el=sec;
+    while(el && el!==rbody){ top+=el.offsetTop||0; el=el.offsetParent; }
+    rbody.scrollTo({top:Math.max(0,top-20),behavior:'smooth'});
+  }
+}
+
+function onRScroll(){
+  const rbody=document.getElementById('r-body');
+  const max=rbody.scrollHeight-rbody.clientHeight;
+  const pct=max>0?Math.round(rbody.scrollTop/max*100):100;
+  document.getElementById('r-prog-fill').style.width=pct+'%';
+  document.getElementById('r-pct').textContent=pct+'%';
+  if(curBook){ readProg[curBook.id]=rbody.scrollTop; lsSet(LS.PROG,readProg); }
+}
+function toggleToc(){
+  const tocEl=document.getElementById('r-toc');
+  const isMob=window.innerWidth<=600;
+  if(isMob){
+    // На мобиле: открываем на весь экран
+    tocVisible=true;
+    tocEl.classList.add('mob-show');
+  } else {
+    // На десктопе: показать/скрыть панель
+    tocVisible=!tocVisible;
+    tocEl.style.display=tocVisible?'':'none';
+  }
+}
+function closeToc(){
+  const tocEl=document.getElementById('r-toc');
+  tocVisible=false;
+  tocEl.classList.remove('mob-show');
+  tocEl.style.display='none';
+}
+function changeFontSize(d){
+  rFontSize=Math.max(11,Math.min(30,rFontSize+d));
+  document.getElementById('r-content').style.fontSize=rFontSize+'px';
+  document.getElementById('fs-val').textContent=rFontSize;
+}
+
+// BOOKMARKS
+function addBm(){
+  if(!curBook) return;
+  const rb=document.getElementById('r-body');
+  const bms=bookmarks[curBook.id]||[];
+  bms.push({id:uid(),scrollY:rb.scrollTop,label:'Закладка '+(bms.length+1)});
+  bookmarks[curBook.id]=bms; lsSet(LS.BM,bookmarks);
+  if(bmVisible) renderBms();
+}
+function toggleBmPanel(){
+  bmVisible=!bmVisible;
+  document.getElementById('bm-panel').style.display=bmVisible?'block':'none';
+  if(bmVisible) renderBms();
+}
+function renderBms(){
+  const bms=(curBook&&bookmarks[curBook.id])||[];
+  const list=document.getElementById('bm-list');
+  if(!bms.length){list.innerHTML='<div style="font-size:.73rem;color:var(--text3)">Нажмите 🔖 чтобы добавить</div>';return;}
+  list.innerHTML=bms.map(b=>`
+    <div class="bm-item" onclick="jumpBm(${b.scrollY})">
+      <span class="bm-txt">📌 ${esc(b.label)}</span>
+      <button class="icon-btn" style="font-size:.65rem" onclick="event.stopPropagation();removeBm('${b.id}')">✕</button>
+    </div>`).join('');
+}
+function jumpBm(y){ document.getElementById('r-body').scrollTop=y; }
+function removeBm(id){
+  if(!curBook) return;
+  bookmarks[curBook.id]=(bookmarks[curBook.id]||[]).filter(b=>b.id!==id);
+  lsSet(LS.BM,bookmarks); renderBms();
+}
+
+// SEARCH
+function toggleSearch(){
+  const bar=document.getElementById('srch-bar');
+  const vis=bar.style.display!=='none';
+  bar.style.display=vis?'none':'flex';
+  if(!vis) document.getElementById('srch-inp').focus();
+  else closeSearch();
+}
+function closeSearch(){
+  document.getElementById('srch-bar').style.display='none';
+  document.getElementById('srch-inp').value='';
+  clearHighlights();
+}
+function doSearch(){
+  const q=document.getElementById('srch-inp').value.trim();
+  clearHighlights();
+  if(!q) return;
+  const content=document.getElementById('r-content');
+  markText(content,q);
+}
+function clearHighlights(){
+  document.querySelectorAll('#r-content mark').forEach(m=>{
+    const t=document.createTextNode(m.textContent);
+    m.parentNode.replaceChild(t,m);
+  });
+  document.getElementById('r-content').normalize();
+}
+function markText(el,q){
+  const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);
+  const hits=[]; let node;
+  while((node=walker.nextNode())){
+    const idx=node.textContent.toLowerCase().indexOf(q.toLowerCase());
+    if(idx>=0) hits.push({node,idx,len:q.length});
+  }
+  for(let i=hits.length-1;i>=0;i--){
+    const{node,idx,len}=hits[i];
+    const mark=document.createElement('mark');
+    const after=node.splitText(idx+len);
+    const mid=node.splitText(idx);
+    mark.textContent=mid.textContent;
+    mid.parentNode.replaceChild(mark,mid);
+  }
+}
+
+// ═══════════════════════════════════════
+// EXPORT — ZIP builder
+// ═══════════════════════════════════════
+const CRC=((()=>{const t=new Uint32Array(256);for(let i=0;i<256;i++){let c=i;for(let j=0;j<8;j++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);t[i]=c;}return t;})());
+function crc32(b){let c=0xFFFFFFFF;for(let i=0;i<b.length;i++)c=CRC[(c^b[i])&0xFF]^(c>>>8);return(c^0xFFFFFFFF)>>>0;}
+function u16(n){return[n&0xFF,(n>>8)&0xFF];}
+function u32(n){return[n&0xFF,(n>>8)&0xFF,(n>>16)&0xFF,(n>>24)&0xFF];}
+function enc(s){return new TextEncoder().encode(s);}
+
+function buildZip(files){
+  const locs=[],dirs=[];let off=0;
+  for(const f of files){
+    const nm=enc(f.name);
+    const data=f.data instanceof Uint8Array?f.data:enc(f.data);
+    const crc=crc32(data);const sz=data.length;
+    const lh=new Uint8Array([0x50,0x4B,0x03,0x04,0x14,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,...u32(crc),...u32(sz),...u32(sz),...u16(nm.length),0x00,0x00,...nm,...data]);
+    const cd=new Uint8Array([0x50,0x4B,0x01,0x02,0x14,0x00,0x14,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,...u32(crc),...u32(sz),...u32(sz),...u16(nm.length),0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,...u32(off),...nm]);
+    locs.push(lh);dirs.push(cd);off+=lh.length;
+  }
+  const cdSz=dirs.reduce((s,d)=>s+d.length,0);
+  const eocd=new Uint8Array([0x50,0x4B,0x05,0x06,0x00,0x00,0x00,0x00,...u16(files.length),...u16(files.length),...u32(cdSz),...u32(off),0x00,0x00]);
+  const all=[...locs,...dirs,eocd];
+  const tot=all.reduce((s,b)=>s+b.length,0);
+  const out=new Uint8Array(tot);let p=0;
+  for(const b of all){out.set(b,p);p+=b.length;}
+  return out;
+}
+
+function dlBlob(blob,name){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+}
+function safeName(s){ return (s||'book').replace(/[^\w\u0400-\u04FF]/g,'_').slice(0,60); }
+
+function doExportEpub(){
+  closeExpDrop(); collectEditor();
+  const b=curBook; if(!b) return;
+  const {id,title,author,description:desc,chapters:chs=[]} = {
+    id:b.id||uid(),title:b.title||'Без названия',author:b.author||'',
+    description:b.description||'',chapters:b.chapters||[]
+  };
+  const css=`body{font-family:Georgia,serif;max-width:680px;margin:0 auto;padding:2em 1.5em;line-height:1.85}h1{font-size:2em;margin-bottom:.3em}h2{font-size:1.4em;margin:2em 0 .7em;border-bottom:1px solid #ddd;padding-bottom:.35em}.meta{color:#888;font-size:.9em;margin-bottom:2em;padding-bottom:1.5em;border-bottom:1px solid #ddd}.cover-img{max-width:260px;display:block;margin:0 auto 2em;border-radius:6px}p{white-space:pre-wrap;margin-bottom:1em}`;
+  const xHead=t=>`<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>${xmlE(t)}</title><link rel="stylesheet" type="text/css" href="../css/style.css"/></head><body>`;
+  const titlePage=xHead(title)+(b.cover?`<img class="cover-img" src="../images/cover.jpg" alt=""/>`:'')+`<h1>${xmlE(title)}</h1><div class="meta">${author?`<strong>${xmlE(author)}</strong>`:``}${desc?`<br/><em>${xmlE(desc)}</em>`:``}</div></body></html>`;
+  const chPages=chs.map((ch,i)=>xHead(ch.title||`Глава ${i+1}`)+`<h2>${xmlE(ch.title||`Глава ${i+1}`)}</h2>`+(ch.content||'').split(/\n\n+/).map(p=>p.trim()?`<p>${xmlE(p)}</p>`:'').join('')+'</body></html>');
+  const opf=`<?xml version="1.0" encoding="UTF-8"?><package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="BookId"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf"><dc:title>${xmlE(title)}</dc:title><dc:creator opf:role="aut">${xmlE(author)}</dc:creator><dc:description>${xmlE(desc)}</dc:description><dc:language>ru</dc:language><dc:identifier id="BookId">urn:uuid:${id}</dc:identifier></metadata><manifest><item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/><item id="css" href="css/style.css" media-type="text/css"/><item id="t0" href="text/title.xhtml" media-type="application/xhtml+xml"/>${chs.map((_,i)=>`<item id="c${i}" href="text/ch${i}.xhtml" media-type="application/xhtml+xml"/>`).join('')}${b.cover?`<item id="cov" href="images/cover.jpg" media-type="image/jpeg"/>`:''}</manifest><spine toc="ncx"><itemref idref="t0"/>${chs.map((_,i)=>`<itemref idref="c${i}"/>`).join('')}</spine></package>`;
+  const ncx=`<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN" "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd"><ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1"><head><meta name="dtb:uid" content="urn:uuid:${id}"/><meta name="dtb:depth" content="1"/><meta name="dtb:totalPageCount" content="0"/><meta name="dtb:maxPageNumber" content="0"/></head><docTitle><text>${xmlE(title)}</text></docTitle><navMap><navPoint id="n0" playOrder="1"><navLabel><text>${xmlE(title)}</text></navLabel><content src="text/title.xhtml"/></navPoint>${chs.map((ch,i)=>`<navPoint id="n${i+1}" playOrder="${i+2}"><navLabel><text>${xmlE(ch.title||`Глава ${i+1}`)}</text></navLabel><content src="text/ch${i}.xhtml"/></navPoint>`).join('')}</navMap></ncx>`;
+  const cnt=`<?xml version="1.0" encoding="UTF-8"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>`;
+  const files=[
+    {name:'mimetype',data:enc('application/epub+zip')},
+    {name:'META-INF/container.xml',data:enc(cnt)},
+    {name:'OEBPS/content.opf',data:enc(opf)},
+    {name:'OEBPS/toc.ncx',data:enc(ncx)},
+    {name:'OEBPS/css/style.css',data:enc(css)},
+    {name:'OEBPS/text/title.xhtml',data:enc(titlePage)},
+    ...chPages.map((p,i)=>({name:`OEBPS/text/ch${i}.xhtml`,data:enc(p)})),
+  ];
+  if(b.cover&&b.cover.startsWith('data:image')){
+    try{const b64=b.cover.split(',')[1],raw=atob(b64),bytes=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);files.push({name:'OEBPS/images/cover.jpg',data:bytes});}catch(_){}
+  }
+  dlBlob(new Blob([buildZip(files)],{type:'application/epub+zip'}),safeName(title)+'.epub');
+}
+
+function doExportFb2(){
+  closeExpDrop(); collectEditor();
+  const b=curBook; if(!b) return;
+  const title=b.title||'Без названия', author=b.author||'', desc=b.description||'';
+  const chs=b.chapters||[];
+  const parts=author.trim().split(/\s+/);
+  const last=parts.length>1?parts[parts.length-1]:author;
+  const first=parts.length>1?parts.slice(0,-1).join(' '):'';
+  const p2p=t=>(t||'').split(/\n+/).map(l=>l.trim()?`    <p>${xmlE(l)}</p>`:'    <empty-line/>').join('\n');
+  const sections=chs.length?chs.map(c=>`  <section>\n    <title><p>${xmlE(c.title||'')}</p></title>\n${p2p(c.content)}\n  </section>`).join('\n'):`  <section>\n${p2p(b.rawText||'')}\n  </section>`;
+  let covRef='', binBlock='';
+  if(b.cover&&b.cover.startsWith('data:image')){
+    const mm=b.cover.match(/data:(image\/[^;]+)/);
+    const mime=mm?mm[1]:'image/jpeg';
+    const bdata=(b.cover.split(',')[1]||'');
+    covRef='\n    <coverpage><image l:href="#cov"/></coverpage>';
+    binBlock=`\n<binary id="cov" content-type="${xmlE(mime)}">\n${bdata}\n</binary>`;
+  }
+  const fb2=`<?xml version="1.0" encoding="UTF-8"?>\n<FictionBook xmlns="http://www.gribuser.ru/xml/fictionbook/2.0" xmlns:l="http://www.w3.org/1999/xlink">\n<description>\n  <title-info>\n    <genre>prose_contemporary</genre>\n    <author><first-name>${xmlE(first)}</first-name><last-name>${xmlE(last)}</last-name></author>\n    <book-title>${xmlE(title)}</book-title>\n    <annotation><p>${xmlE(desc)}</p></annotation>\n    <lang>ru</lang>${covRef}\n  </title-info>\n  <document-info><author><nickname>RoBoosk</nickname></author><program-used>RoBoosk v1.35 by Romsk</program-used><id>${xmlE(b.id||'')}</id><version>1.0</version></document-info>\n</description>\n<body>\n  <title><p>${xmlE(title)}</p>${author?`<p>${xmlE(author)}</p>`:''}</title>\n${sections}\n</body>${binBlock}\n</FictionBook>`;
+  dlBlob(new Blob([fb2],{type:'application/xml;charset=utf-8'}),safeName(title)+'.fb2');
+}
+
+function doExportHtml(){
+  closeExpDrop(); collectEditor();
+  const b=curBook; if(!b) return;
+  const html=`<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"/><title>${esc(b.title||'Книга')}</title><style>body{font-family:Georgia,serif;max-width:720px;margin:0 auto;padding:3rem 2rem;line-height:1.9;color:#1a1a2a;background:#faf8f4}h1{font-size:2.4rem;margin-bottom:.5rem}h2{font-size:1.5rem;margin:3rem 0 1rem;padding-top:2rem;border-top:1px solid #e0dcd4}.meta{color:#888;font-size:.9rem;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid #e0dcd4}img{max-width:280px;display:block;margin:0 auto 2.5rem;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.15)}p{white-space:pre-wrap;margin-bottom:1em}</style></head><body>${b.cover?`<img src="${b.cover}" alt=""/>`:''}<h1>${esc(b.title||'Без названия')}</h1><div class="meta">${b.author?`<b>${esc(b.author)}</b><br/>`:''}${b.description?`<em>${esc(b.description)}</em>`:''}</div>${(b.chapters||[]).map(c=>`<h2>${esc(c.title||'')}</h2><p>${esc(c.content||'')}</p>`).join('\n')}${(!b.chapters?.length&&b.rawText)?`<p>${esc(b.rawText)}</p>`:''}</body></html>`;
+  dlBlob(new Blob([html],{type:'text/html;charset=utf-8'}),safeName(b.title)+'.html');
+}
+
+// ═══════════════════════════════════════
+// MODAL HELPERS
+// ═══════════════════════════════════════
+function openM(id){ document.getElementById(id).classList.add('open'); }
+function closeM(id){ document.getElementById(id).classList.remove('open'); }
+
+// ── TTS (Reader) ──
+let rTtsActive=false, rTtsWords=[], rTtsIdx=0, rTtsUtter=null;
+
+function toggleReaderTTS(){
+  if(rTtsActive){ stopReaderTTS(); return; }
+  const content=document.getElementById('r-content');
+  if(!content){ return; }
+  const text=content.innerText||content.textContent||'';
+  if(!text.trim()){ return; }
+  startReaderTTS(text);
+}
+
+function startReaderTTS(text){
+  if(!('speechSynthesis' in window)){ alert('TTS не поддерживается браузером'); return; }
+  stopReaderTTS();
+  rTtsWords=text.trim().split(/\s+/).filter(Boolean);
+  if(!rTtsWords.length) return;
+  rTtsIdx=0; rTtsActive=true;
+  const btn=document.getElementById('r-tts-btn');
+  if(btn){ btn.textContent='⏹'; btn.title='Остановить озвучку'; }
+  const go=()=>rSpeakNext();
+  if(window.speechSynthesis.getVoices().length===0){
+    window.speechSynthesis.onvoiceschanged=()=>{ window.speechSynthesis.onvoiceschanged=null; go(); };
+  } else { go(); }
+}
+
+function rSpeakNext(){
+  if(!rTtsActive||rTtsIdx>=rTtsWords.length){ stopReaderTTS(); return; }
+  const CHUNK=180;
+  const chunk=rTtsWords.slice(rTtsIdx,rTtsIdx+CHUNK).join(' ');
+  rTtsIdx+=CHUNK;
+  rTtsUtter=new SpeechSynthesisUtterance(chunk);
+  rTtsUtter.lang='ru-RU'; rTtsUtter.rate=0.95;
+  const voices=window.speechSynthesis.getVoices();
+  const ruVoice=voices.find(v=>v.lang.startsWith('ru'));
+  if(ruVoice) rTtsUtter.voice=ruVoice;
+  rTtsUtter.onend=()=>{ if(rTtsActive) rSpeakNext(); };
+  rTtsUtter.onerror=()=>{ if(rTtsActive) rSpeakNext(); };
+  window.speechSynthesis.speak(rTtsUtter);
+}
+
+function stopReaderTTS(){
+  rTtsActive=false;
+  window.speechSynthesis?.cancel();
+  rTtsUtter=null;
+  const btn=document.getElementById('r-tts-btn');
+  if(btn){ btn.textContent='🔊'; btn.title='Озвучить главу'; }
+}
+
+// Stop TTS when leaving reader
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.tb-btn,.nav-btn,[onclick*="goHome"]').forEach(b=>{
+    b.addEventListener('click',()=>stopReaderTTS());
+  });
+});
+
+// ── PWA ──
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+
+</script>
+</body>
+</html>

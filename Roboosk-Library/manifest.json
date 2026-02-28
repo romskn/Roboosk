@@ -1,0 +1,23 @@
+{
+  "name": "RoBoosk Library",
+  "short_name": "RoBoosk Library",
+  "description": "Открытая онлайн-библиотека электронных книг",
+  "start_url": "/Roboosk-Library/",
+  "scope": "/Roboosk-Library/",
+  "display": "standalone",
+  "background_color": "#0c0f0a",
+  "theme_color": "#6dbe8a",
+  "lang": "ru",
+  "icons": [
+    {
+      "src": "assets/R.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/R.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

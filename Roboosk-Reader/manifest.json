@@ -1,0 +1,23 @@
+{
+  "name": "RoBoosk",
+  "short_name": "RoBoosk",
+  "description": "Читалка электронных книг — EPUB, FB2, RTF, TXT прямо в браузере",
+  "start_url": "/Roboosk/",
+  "scope": "/Roboosk/",
+  "display": "standalone",
+  "background_color": "#141d17",
+  "theme_color": "#5cbe7c",
+  "lang": "ru",
+  "icons": [
+    {
+      "src": "assets/R.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/R.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
